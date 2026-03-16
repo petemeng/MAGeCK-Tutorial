@@ -19,3 +19,5 @@ MAGeCK/wechat_drafts/__pycache__/
 
 # Heavy temp files
 MAGeCK/repro/tmp/
+
+MAGeCK/wechat_drafts/output/
