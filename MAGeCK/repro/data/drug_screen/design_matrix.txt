@@ -1,0 +1,7 @@
+Samples	baseline	time	drug
+T0_rep1	1	0	0
+T0_rep2	1	0	0
+DMSO_rep1	1	1	0
+DMSO_rep2	1	1	0
+Drug_rep1	1	1	1
+Drug_rep2	1	1	1

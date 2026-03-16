@@ -1,0 +1,21 @@
+# Secrets / local configs
+.claude/
+.mcp.json
+.claude.json
+.codex/
+
+# Python
+__pycache__/
+*.pyc
+.site-venv/
+.venv/
+site/
+
+# Generated WeChat outputs
+MAGeCK/wechat_drafts/output/publish_results*.json
+MAGeCK/wechat_drafts/output/draft_get_dump.json
+MAGeCK/wechat_drafts/rendered/
+MAGeCK/wechat_drafts/__pycache__/
+
+# Heavy temp files
+MAGeCK/repro/tmp/

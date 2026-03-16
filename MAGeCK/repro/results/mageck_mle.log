@@ -1,0 +1,66 @@
+INFO  @ Sun, 15 Mar 2026 22:04:58: Parameters: /home/data/t060551/.local/bin/mageck mle -k data/mle/leukemia.new.csv -d data/mle/designmat.txt -n results/mageck_mle --cnv-norm data/mle/cnv_data.txt --permutation-round 2 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Cannot parse design matrix as a string; try to parse it as a file name ... 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Design matrix: 
+INFO  @ Sun, 15 Mar 2026 22:04:58: [[1. 0. 0.] 
+INFO  @ Sun, 15 Mar 2026 22:04:58:  [1. 0. 0.] 
+INFO  @ Sun, 15 Mar 2026 22:04:58:  [1. 1. 0.] 
+INFO  @ Sun, 15 Mar 2026 22:04:58:  [1. 0. 1.]] 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Beta labels:baseline,HL60_HAEMATOPOIETIC_AND_LYMPHOID_TISSUE,KBM7 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Included samples:HL60.initial,KBM7.initial,HL60.final,KBM7.final 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Treating data/mle/leukemia.new.csv as csv file ... 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Loaded samples:HL60.initial;KBM7.initial;HL60.final;KBM7.final 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Sample index: 0;1;2;3 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Loaded 1000 genes. 
+DEBUG @ Sun, 15 Mar 2026 22:04:58: Initial (total) size factor: 1.6187589797380364 1.9491565826180821 0.7360317581763139 0.6620046678574375 
+DEBUG @ Sun, 15 Mar 2026 22:04:58: Median factor: 1.4417792669748544 1.721899507573586 0.6493189729043018 0.5832530734340999 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Final size factor: 1.4417792669748544 1.721899507573586 0.6493189729043018 0.5832530734340999 
+INFO  @ Sun, 15 Mar 2026 22:04:58: size factor: 0.6935874463628563,0.5807539845395215,1.5400751275250082,1.7145216125688998 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Checking copy number variation profiles... 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Normalizing by copy number with HL60_HAEMATOPOIETIC_AND_LYMPHOID_TISSUE as the reference cell line. 
+WARNING @ Sun, 15 Mar 2026 22:04:58: KBM7 is not represented in the inputted copy number variation data. 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Thread 0 started. 
+INFO  @ Sun, 15 Mar 2026 22:04:58: Thread 0: total 1 instances. 
+INFO  @ Sun, 15 Mar 2026 22:04:59: Thread 0 completed. 
+INFO  @ Sun, 15 Mar 2026 22:04:59: All threads completed. 
+INFO  @ Sun, 15 Mar 2026 22:04:59: Modeling the mean and variance ... 
+INFO  @ Sun, 15 Mar 2026 22:04:59: Run the algorithm for the second time ... 
+INFO  @ Sun, 15 Mar 2026 22:04:59: Thread 0 started. 
+INFO  @ Sun, 15 Mar 2026 22:04:59: Thread 0: total 1000 instances. 
+INFO  @ Sun, 15 Mar 2026 22:04:59: Thread 0: Calculating AAAS (1) ...  
+INFO  @ Sun, 15 Mar 2026 22:05:04: Thread 0 completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:04: All threads completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:04: Permuting groups of gene with 9 sgRNAs per gene. Group progress: 1/2 
+INFO  @ Sun, 15 Mar 2026 22:05:04: Start permuting 2 rounds ... 
+INFO  @ Sun, 15 Mar 2026 22:05:04: Collecting 9999 sgRNAs from 1000 genes. 
+INFO  @ Sun, 15 Mar 2026 22:05:04: Permuting round 0 ... 
+INFO  @ Sun, 15 Mar 2026 22:05:04: Thread 0 started. 
+INFO  @ Sun, 15 Mar 2026 22:05:04: Thread 0: total 1000 instances. 
+INFO  @ Sun, 15 Mar 2026 22:05:04: Thread 0: Calculating AAAS (1) ...  
+INFO  @ Sun, 15 Mar 2026 22:05:09: Thread 0 completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:09: All threads completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:09: Permuting round 1 ... 
+INFO  @ Sun, 15 Mar 2026 22:05:09: Thread 0 started. 
+INFO  @ Sun, 15 Mar 2026 22:05:09: Thread 0: total 1000 instances. 
+INFO  @ Sun, 15 Mar 2026 22:05:09: Thread 0: Calculating AAAS (1) ...  
+INFO  @ Sun, 15 Mar 2026 22:05:13: Thread 0 completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:13: All threads completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:13: Assigning p values... 
+INFO  @ Sun, 15 Mar 2026 22:05:13: Permuting groups of gene with 10 sgRNAs per gene. Group progress: 2/2 
+INFO  @ Sun, 15 Mar 2026 22:05:13: Start permuting 2 rounds ... 
+INFO  @ Sun, 15 Mar 2026 22:05:13: Collecting 9999 sgRNAs from 1000 genes. 
+INFO  @ Sun, 15 Mar 2026 22:05:13: Permuting round 0 ... 
+INFO  @ Sun, 15 Mar 2026 22:05:13: Thread 0 started. 
+INFO  @ Sun, 15 Mar 2026 22:05:13: Thread 0: total 1000 instances. 
+INFO  @ Sun, 15 Mar 2026 22:05:13: Thread 0: Calculating AAAS (1) ...  
+INFO  @ Sun, 15 Mar 2026 22:05:19: Thread 0 completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:19: All threads completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:19: Permuting round 1 ... 
+INFO  @ Sun, 15 Mar 2026 22:05:19: Thread 0 started. 
+INFO  @ Sun, 15 Mar 2026 22:05:19: Thread 0: total 1000 instances. 
+INFO  @ Sun, 15 Mar 2026 22:05:19: Thread 0: Calculating AAAS (1) ...  
+INFO  @ Sun, 15 Mar 2026 22:05:25: Thread 0 completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:25: All threads completed. 
+INFO  @ Sun, 15 Mar 2026 22:05:25: Assigning p values... 
+INFO  @ Sun, 15 Mar 2026 22:05:25: Performing copy number normalization ... 
+INFO  @ Sun, 15 Mar 2026 22:05:25: Writing gene results to results/mageck_mle.gene_summary.txt 
+INFO  @ Sun, 15 Mar 2026 22:05:25: Writing sgRNA results to results/mageck_mle.sgrna_summary.txt 

@@ -1,0 +1,5 @@
+File	Label	Reads	Mapped	Percentage	TotalsgRNAs	Zerocounts	GiniIndex	NegSelQC	NegSelQCPval	NegSelQCPvalPermutation	NegSelQCPvalPermutationFDR	NegSelQCGene
+data/basic/CTRL_rep1.fastq	CTRL_rep1	2500	1453	0.5812	2550	1276	0.5267	0	1	1	1	0.0
+data/basic/CTRL_rep2.fastq	CTRL_rep2	2500	1453	0.5812	2550	1276	0.5267	0	1	1	1	0.0
+data/basic/TREAT_rep1.fastq	TREAT_rep1	2500	1471	0.5884	2550	1199	0.4931	0	1	1	1	0.0
+data/basic/TREAT_rep2.fastq	TREAT_rep2	2500	1471	0.5884	2550	1199	0.4931	0	1	1	1	0.0

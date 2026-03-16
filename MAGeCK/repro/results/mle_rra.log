@@ -1,0 +1,76 @@
+INFO  @ Sun, 15 Mar 2026 22:03:45: Parameters: /home/data/t060551/.local/bin/mageck test -k data/mle/leukemia.new.csv -t HL60.final,KBM7.final -c HL60.initial,KBM7.initial -n results/mle_rra --normcounts-to-file 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Welcome to MAGeCK v0.5.9.5. Command: test 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Loading count table from data/mle/leukemia.new.csv  
+INFO  @ Sun, 15 Mar 2026 22:03:45: Processing 1 lines.. 
+DEBUG @ Sun, 15 Mar 2026 22:03:45: Parsing error in line 1 (usually the header line). Skip this line. 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Loaded 9999 records. 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/test_report.Rmd. 
+DEBUG @ Sun, 15 Mar 2026 22:03:45: Setting up the visualization module... 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.RTemplate. 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template_indvgene.RTemplate. 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.Rnw. 
+DEBUG @ Sun, 15 Mar 2026 22:03:45: Setting up the visualization module... 
+DEBUG @ Sun, 15 Mar 2026 22:03:45: Given sample labels: HL60.final,KBM7.final 
+DEBUG @ Sun, 15 Mar 2026 22:03:45: Converted index: 2 3 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Treatment samples:HL60.final,KBM7.final 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Treatment sample index:2,3 
+DEBUG @ Sun, 15 Mar 2026 22:03:45: Given sample labels: HL60.initial,KBM7.initial 
+DEBUG @ Sun, 15 Mar 2026 22:03:45: Converted index: 0 1 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Control samples:HL60.initial,KBM7.initial 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Control sample index:0,1 
+DEBUG @ Sun, 15 Mar 2026 22:03:45: Initial (total) size factor: 1.6198865283823018 1.951240006963322 0.7358132596720757 0.6617530532588767 
+DEBUG @ Sun, 15 Mar 2026 22:03:45: Median factor: 1.442249601678541 1.7230150968794973 0.6481594964068652 0.5825227366611764 
+INFO  @ Sun, 15 Mar 2026 22:03:45: Final size factor: 1.442249601678541 1.7230150968794973 0.6481594964068652 0.5825227366611764 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Writing normalized read counts to results/mle_rra.normalized.txt 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Detecting outliers from variance estimation.. Avg read count:[703.9285865773195], Var: [242565.36204314552] 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Skipping 42 sgRNAs from variance calculation because of their extreme high counts (> 4* STD (mean counts) ). 
+DEBUG @ Sun, 15 Mar 2026 22:03:46: Adjusted model: 1.036946620445846	4.371476602746411 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Before RRA, 8 sgRNAs are removed with zero counts in both group(s). 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Use qnorm to reversely calculate sgRNA scores ... 
+DEBUG @ Sun, 15 Mar 2026 22:03:46: lower test FDR cutoff: 0.33910519467520767 
+DEBUG @ Sun, 15 Mar 2026 22:03:46: higher test FDR cutoff: 0.3720348313482134 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Running command: RRA -i results/mle_rra.plow.txt -o results/mle_rra.gene.low.txt -p 0.33910519467520767 --skip-gene NA --skip-gene na  
+INFO  @ Sun, 15 Mar 2026 22:03:46: Command message: 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Welcome to RRA v 0.5.9. 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Skipping gene NA for permutation ... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Skipping gene na for permutation ... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Reading input file... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Summary: 9991 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Computing lo-values for each group... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Computing false discovery rate... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Permuting genes with 9 sgRNAs... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Permuting genes with 10 sgRNAs... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Number of genes under FDR adjustment: 1000 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Saving to output file... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   RRA completed. 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Groups deletion complete. 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Lists deletion complete. 
+INFO  @ Sun, 15 Mar 2026 22:03:46:    
+INFO  @ Sun, 15 Mar 2026 22:03:46: End command message. 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Running command: RRA -i results/mle_rra.phigh.txt -o results/mle_rra.gene.high.txt -p 0.3720348313482134 --skip-gene NA --skip-gene na  
+INFO  @ Sun, 15 Mar 2026 22:03:46: Command message: 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Welcome to RRA v 0.5.9. 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Skipping gene NA for permutation ... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Skipping gene na for permutation ... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Reading input file... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Summary: 9991 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Computing lo-values for each group... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Computing false discovery rate... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Permuting genes with 9 sgRNAs... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Permuting genes with 10 sgRNAs... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Number of genes under FDR adjustment: 1000 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Saving to output file... 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   RRA completed. 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Groups deletion complete. 
+INFO  @ Sun, 15 Mar 2026 22:03:46:   Lists deletion complete. 
+INFO  @ Sun, 15 Mar 2026 22:03:46:    
+INFO  @ Sun, 15 Mar 2026 22:03:46: End command message. 
+DEBUG @ Sun, 15 Mar 2026 22:03:46: Sorting the merged items by negative selection... 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Loading top 10 genes from results/mle_rra.gene.low.txt: C1orf109,ANAPC4,C7orf26,C3orf17,C14orf80,C16orf80,ANAPC2,C9orf78,C9orf41,BUB3 
+DEBUG @ Sun, 15 Mar 2026 22:03:46: Column index:3 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Loading top 10 genes from results/mle_rra.gene.high.txt: BIN1,C7orf34,CAMK1G,CASP8,ANKK1,C9orf69,CAMKV,BRSK2,BRE,BNC2 
+DEBUG @ Sun, 15 Mar 2026 22:03:46: Column index:9 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Running command: rm results/mle_rra.plow.txt 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Running command: rm results/mle_rra.phigh.txt 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Running command: rm results/mle_rra.gene.low.txt 
+INFO  @ Sun, 15 Mar 2026 22:03:46: Running command: rm results/mle_rra.gene.high.txt 
