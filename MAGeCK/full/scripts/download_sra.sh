@@ -7,6 +7,7 @@ COHORT="article1_basic_full_raw"
 OUTDIR="$ROOT/raw/$COHORT"
 SAMPLE_LABEL=""
 FORCE=0
+ARIA2_CONNECTIONS="${ARIA2_CONNECTIONS:-8}"
 
 usage() {
   cat <<USAGE
@@ -15,6 +16,17 @@ Usage: $(basename "$0") [--manifest PATH] [--cohort NAME] [--outdir PATH] [--sam
 Download FASTQ files listed in a sample manifest and concatenate lane-split runs
 into one merged FASTQ per sample label.
 USAGE
+}
+
+fetch_url() {
+  local url="$1"
+  local dest="$2"
+  if command -v aria2c >/dev/null 2>&1; then
+    aria2c -x "$ARIA2_CONNECTIONS" -s "$ARIA2_CONNECTIONS" -k 1M -c \
+      --file-allocation=none -d "$(dirname "$dest")" -o "$(basename "$dest")" "$url"
+  else
+    curl -L --retry 5 --retry-delay 5 --continue-at - -o "$dest" "$url"
+  fi
 }
 
 while [[ $# -gt 0 ]]; do
@@ -54,7 +66,7 @@ while IFS=$'\t' read -r cohort selected sample_label condition replicate library
     dest="$OUTDIR/runs/${run}.fastq.gz"
     if [[ $FORCE -eq 1 || ! -s "$dest" ]]; then
       echo "[download] $run -> $dest"
-      curl -L --retry 5 --retry-delay 5 --continue-at - -o "$dest" "$url"
+      fetch_url "$url" "$dest"
     else
       echo "[skip] $dest"
     fi

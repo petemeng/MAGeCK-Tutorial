@@ -355,3 +355,12 @@ MAGeCK/
 - `MAGeCK/full/external/brunello/library.tsv`
 
 这一步现在已经接入了抓取脚本，但 Addgene 媒体源在当前环境中响应较慢，正式下载时建议单独执行脚本并保留重试。
+
+## 9. 当前已验证到的关键执行细节
+
+- Brunello 全库注释已经成功组装为 `MAGeCK/full/external/brunello/library.tsv`，共 `77,441` 条 sgRNA，覆盖 `19,115` 个基因/分组（包含 `Non-Targeting Control`）。
+- 由于当前环境访问 Addgene CDN 经常超时，`MAGeCK/full/scripts/fetch_brunello_library.py` 已改成：优先尝试官方 Addgene，失败后自动切换到 GitHub 镜像，并使用分块 `Range` 下载保证可恢复。
+- `SRR8297997` 的已下载 pDNA 快照上，前 `50,000` 条 reads 的最佳匹配出现在正向 `trim-5=23–30`；反向互补匹配几乎为零。
+- 基于同一快照的小样本验证，执行 `mageck count` 后共 `50,000` reads 中成功映射 `38,897` 条，因此 article 1 的全量工作流已固定使用 `--trim-5 23,24,25,26,27,28,29,30`。
+- 在完整 `BrunelloMod_pDNA` FASTQ 上执行 `mageck count --test-run`，前 `1,000,001` reads 中成功映射 `786,514` 条，未命中的库位点仅 `782` 个，说明 Brunello 注释和 trim 参数都已经与真实原始数据对齐。
+- `MAGeCK/full/scripts/download_sra.sh` 已改为优先使用 `aria2c` 断点续传下载 ENA FASTQ；在当前网络条件下明显快于原来的单线程 `curl`。

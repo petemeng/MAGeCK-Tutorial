@@ -25,6 +25,8 @@ MERGED_DIR = ROOT / article["merged_dir"]
 COUNT_PREFIX = ROOT / article["count_prefix"]
 TEST_PREFIX = ROOT / article["test_prefix"]
 LIBRARY = ROOT / article["library_annotation"]
+TRIM5 = article.get("trim_5", "AUTO")
+REVERSE_COMPLEMENT = article.get("reverse_complement", False)
 
 rule all:
     input:
@@ -50,9 +52,11 @@ rule mageck_count:
         sample_labels=','.join(SAMPLES),
         fastq_arg=' '.join(str(MERGED_DIR / f"{sample}.fastq.gz") for sample in SAMPLES),
         prefix=str(COUNT_PREFIX),
+        trim5=str(TRIM5),
+        reverse_flag=' --reverse-complement' if REVERSE_COMPLEMENT else '',
     shell:
         "mkdir -p $(dirname {params.prefix}) && "
-        "mageck count -l {input.library} --fastq {params.fastq_arg} --sample-label {params.sample_labels} -n {params.prefix}"
+        "mageck count -l {input.library} --fastq {params.fastq_arg} --sample-label {params.sample_labels} --trim-5 {params.trim5}{params.reverse_flag} -n {params.prefix}"
 
 rule mageck_test:
     input:

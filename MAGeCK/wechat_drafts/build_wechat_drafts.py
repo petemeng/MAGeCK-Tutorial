@@ -18,9 +18,9 @@ ARTICLE_CONFIG: list[dict[str, Any]] = [
         'source': ROOT / 'MAGeCK' / '1.md',
         'slug': '01-mageck-basic',
         'series': 'CRISPR 筛选最佳实践（一）',
-        'cover_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_gene_volcano.png',
-        'hero_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_sgrna_rank.png',
-        'digest': '从 sgRNA 计数、RRA 排序到 essential gene、DepMap 交叉验证与 GO 富集，一篇跑通 MAGeCK 最核心的基础分析流程。',
+        'cover_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article1_pub_gene_volcano_full.png',
+        'hero_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article1_pub_sgrna_rank_full.png',
+        'digest': '基于 Sanson 2018 / SRP172473 全量原始数据，从 Brunello 文库计数、RRA 排序到 essential gene 与 GO 富集，完整走通 MAGeCK 基础分析。',
         'author': 'Songlab',
     },
     {
