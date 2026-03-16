@@ -12,12 +12,6 @@ title: 1. 基础流程：从计数到必需基因
 > - 前置知识：Linux 命令行基础，了解 CRISPR-Cas9 的基本概念
 
 
-> ✅ 2026-03-15 实跑修订
-> - 可执行版代码：`repro/analysis/01_basic_visualization.R`
-> - 真实结果目录：`repro/results/`
-> - 一键复现：先运行 `repro/install_tools.sh`，再运行 `repro/run_all.sh`
-> - 本文原始代码块为草稿；以 `repro` 中的实跑脚本和结果为准
-
 ---
 
 ## 本篇目标

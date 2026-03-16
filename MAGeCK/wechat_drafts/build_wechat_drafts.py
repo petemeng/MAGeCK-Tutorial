@@ -332,13 +332,16 @@ def beautify_html(
     root['style'] = ROOT_WRAP_STYLE
 
     root.append(build_title_card(outer, display_title))
-    for idx, block in enumerate(quote_blocks):
-        note = idx > 0 or any('实跑修订' in line for line in block)
-        root.append(build_meta_card(outer, block, note=note))
-    if quote_blocks:
+    display_blocks = [
+        block for block in quote_blocks
+        if not any(key in ' '.join(block) for key in ['实跑修订', '可执行版代码', '真实结果目录', '一键复现'])
+    ]
+    for block in display_blocks:
+        root.append(build_meta_card(outer, block, note=False))
+    if display_blocks:
         root.append(build_divider(outer))
 
-    previous_divider = bool(quote_blocks)
+    previous_divider = bool(display_blocks)
     for node in list(soup.contents):
         if isinstance(node, NavigableString) and not node.strip():
             continue

@@ -12,11 +12,6 @@ title: 4. CRISPRi / CRISPRa
 > - 前置知识：完成本系列第 1 篇（MAGeCK 基础流程）
 
 
-> ✅ 2026-03-15 实跑修订
-> - 可执行版代码：`repro/analysis/04_crispri_analysis.R`
-> - 真实结果目录：`repro/results/`
-> - 为保证仓库可复现，本篇使用本地生成的 CRISPRi/CRISPRa demo 数据，并与第 1 篇的 CRISPRko 结果做真实对照
-
 ---
 
 ## 本篇目标

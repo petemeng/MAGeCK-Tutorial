@@ -12,11 +12,6 @@ title: 6. 投稿图表与审稿问答
 > - 前置知识：完成本系列第 1-5 篇
 
 
-> ✅ 2026-03-15 实跑修订
-> - 可执行版代码：`repro/analysis/06_publication_figures.R`
-> - 主图：`repro/results/figures/Figure_main.png`
-> - 汇总表：`repro/results/statistics_summary.tsv`
-
 ---
 
 ## 本篇目标

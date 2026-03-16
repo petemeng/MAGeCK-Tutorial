@@ -12,11 +12,6 @@ title: 2. MLE 与 VISPR
 > - 前置知识：完成本系列第 1 篇，results/ 下有 mageck_count.count.txt
 
 
-> ✅ 2026-03-15 实跑修订
-> - 可执行版代码：`repro/analysis/02_mle_analysis.R`
-> - 真实结果目录：`repro/results/`
-> - `VISPR` 的可用命令已校正为 `mageck-vispr`；本文原始片段请以 `repro` 为准
-
 ---
 
 ## 本篇目标
