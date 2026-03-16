@@ -2,10 +2,10 @@
 title: 6. 投稿图表与审稿问答
 ---
 
-# CRISPR 筛选最佳实践系列（六）：发表级图表与审稿人常见问题——最后一公里
+# CRISPR 筛选最佳实践（六）：发表级图表与审稿人常见问题——最后一公里
 
 > 📋 教程信息
-> - GitHub：[songlab-cal/crispr-screen-best-practices]（完整代码与环境文件）
+> - GitHub：[petemeng/MAGeCK-Tutorial](https://github.com/petemeng/MAGeCK-Tutorial)（完整代码、结果与网页）
 > - 数据来源：前 5 篇全部分析结果
 > - 预计阅读：45 分钟 | 实操：30 分钟
 > - 难度：⭐⭐⭐（5 星制）
@@ -558,7 +558,7 @@ cat("GitHub 仓库文件结构见下方。\n")
 最终项目目录：
 
 ```
-crispr-screen-best-practices/
+MAGeCK-Tutorial/
 ├── README.md
 ├── environment.yml
 ├── data/
@@ -582,9 +582,9 @@ crispr-screen-best-practices/
 │       ├── Figure_main.png      # 公众号版
 │       └── pub_*.png            # 各篇独立图
 ├── analysis/
-│   ├── mageck_visualization.R   # 第1篇
+│   ├── 01_basic_visualization.R # 第1篇
 │   ├── 02_mle_analysis.R        # 第2篇
-│   ├── 03_mageckflute.R         # 第3篇
+│   ├── 03_mageckflute_analysis.R # 第3篇
 │   ├── 04_crispri_analysis.R    # 第4篇
 │   ├── 05_drug_interaction.R    # 第5篇
 │   └── 06_publication_figures.R # 第6篇

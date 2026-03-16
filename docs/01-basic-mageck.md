@@ -5,7 +5,7 @@ title: 1. 基础流程：从计数到必需基因
 # CRISPR 筛选最佳实践（一）：MAGeCK 分析——从 sgRNA 计数到必需基因
 
 > 📋 教程信息
-> - GitHub：[songlab-cal/crispr-screen-bindData]（完整代码与环境文件）
+> - GitHub：[petemeng/MAGeCK-Tutorial](https://github.com/petemeng/MAGeCK-Tutorial)（完整代码、结果与网页）
 > - 数据来源：GEO GSE178354（Wang et al., 2022, *Genome Biology*）
 > - 预计阅读：50 分钟 | 实操：40 分钟
 > - 难度：⭐⭐⭐（5 星制）
@@ -390,7 +390,7 @@ ANKK1    10   0.131683   0.6468
 
 ```r
 # ============================================================
-# 文件：analysis/mageck_visualization.R
+# 文件：analysis/01_basic_visualization.R
 # 功能：MAGeCK 结果可视化
 # ============================================================
 
@@ -875,7 +875,7 @@ results/figures/pub_go_enrichment.png    180K
 当前项目目录：
 
 ```
-crispr-screen-best-practices/
+MAGeCK-Tutorial/
 ├── data/
 │   ├── raw/                         # FASTQ 文件
 │   └── brunello_library.tsv         # 文库注释
@@ -891,7 +891,7 @@ crispr-screen-best-practices/
 │       ├── pub_sgrna_barplot.png
 │       └── pub_go_enrichment.png
 ├── analysis/
-│   └── mageck_visualization.R       # 可视化代码
+│   └── 01_basic_visualization.R   # 可视化代码
 └── logs/
     └── versions.log
 ```

@@ -2,10 +2,10 @@
 title: 2. MLE 与 VISPR
 ---
 
-# CRISPR 筛选最佳实践系列（二）：MAGeCK MLE + VISPR——复杂实验设计与交互可视化
+# CRISPR 筛选最佳实践（二）：MAGeCK MLE + VISPR——复杂实验设计与交互可视化
 
 > 📋 教程信息
-> - GitHub：[songlab-cal/crispr-screen-best-practices]（完整代码与环境文件）
+> - GitHub：[petemeng/MAGeCK-Tutorial](https://github.com/petemeng/MAGeCK-Tutorial)（完整代码、结果与网页）
 > - 数据来源：GEO GSE178354（Wang et al., 2022, *Genome Biology*）
 > - 预计阅读：50 分钟 | 实操：45 分钟
 > - 难度：⭐⭐⭐⭐（5 星制）
@@ -707,7 +707,7 @@ results/figures/pub_nine_quadrant.png    388K
 当前项目目录：
 
 ```
-crispr-screen-best-practices/
+MAGeCK-Tutorial/
 ├── results/
 │   ├── mageck_count.count.txt
 │   ├── mageck_test.gene_summary.txt       # 第 1 篇 RRA
@@ -724,7 +724,7 @@ crispr-screen-best-practices/
 │       ├── pub_beta_distribution.png      # 本篇
 │       └── pub_nine_quadrant.png          # 本篇
 └── analysis/
-    ├── mageck_visualization.R             # 第 1 篇
+    ├── 01_basic_visualization.R         # 第 1 篇
     └── 02_mle_analysis.R                  # 本篇
 ```
 

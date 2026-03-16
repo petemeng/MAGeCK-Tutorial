@@ -2,10 +2,10 @@
 title: 5. 药物互作与合成致死
 ---
 
-# CRISPR 筛选最佳实践系列（五）：药物-基因互作筛选与合成致死分析——一加一大于二
+# CRISPR 筛选最佳实践（五）：药物-基因互作筛选与合成致死分析——一加一大于二
 
 > 📋 教程信息
-> - GitHub：[songlab-cal/crispr-screen-best-practices]（完整代码与环境文件）
+> - GitHub：[petemeng/MAGeCK-Tutorial](https://github.com/petemeng/MAGeCK-Tutorial)（完整代码、结果与网页）
 > - 数据来源：模拟数据（基于 Olivieri et al., 2020 *Cell* 的 olaparib resistance screen 设计）
 > - 预计阅读：45 分钟 | 实操：35 分钟
 > - 难度：⭐⭐⭐⭐⭐（5 星制）
@@ -656,7 +656,7 @@ cat("  抵抗:", nrow(res_output), "个基因\n")
 当前项目目录：
 
 ```
-crispr-screen-best-practices/
+MAGeCK-Tutorial/
 ├── data/drug_screen/
 │   ├── count_table.txt
 │   ├── library.tsv
