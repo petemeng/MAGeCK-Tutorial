@@ -5,11 +5,12 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MANIFEST="$ROOT/manifests/samples_basic.tsv"
 COHORT="article1_basic_full_raw"
 OUTDIR="$ROOT/raw/$COHORT"
+SAMPLE_LABEL=""
 FORCE=0
 
 usage() {
   cat <<USAGE
-Usage: $(basename "$0") [--manifest PATH] [--cohort NAME] [--outdir PATH] [--force]
+Usage: $(basename "$0") [--manifest PATH] [--cohort NAME] [--outdir PATH] [--sample LABEL] [--force]
 
 Download FASTQ files listed in a sample manifest and concatenate lane-split runs
 into one merged FASTQ per sample label.
@@ -21,6 +22,7 @@ while [[ $# -gt 0 ]]; do
     --manifest) MANIFEST="$2"; shift 2 ;;
     --cohort) COHORT="$2"; shift 2 ;;
     --outdir) OUTDIR="$2"; shift 2 ;;
+    --sample) SAMPLE_LABEL="$2"; shift 2 ;;
     --force) FORCE=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; usage; exit 1 ;;
@@ -32,8 +34,9 @@ mkdir -p "$OUTDIR/runs" "$OUTDIR/merged"
 echo "Manifest: $MANIFEST"
 echo "Cohort:   $COHORT"
 echo "Outdir:   $OUTDIR"
+[[ -n "$SAMPLE_LABEL" ]] && echo "Sample:   $SAMPLE_LABEL"
 
-awk -F '\t' -v cohort="$COHORT" 'NR>1 && $1==cohort && $2=="yes" {print}' "$MANIFEST" |
+awk -F '\t' -v cohort="$COHORT" -v sample="$SAMPLE_LABEL" 'NR>1 && $1==cohort && $2=="yes" && (sample=="" || $3==sample) {print}' "$MANIFEST" |
 while IFS=$'\t' read -r cohort selected sample_label condition replicate library cell_line run_accessions fastq_urls note; do
   IFS=';' read -r -a runs <<< "$run_accessions"
   IFS=';' read -r -a urls <<< "$fastq_urls"

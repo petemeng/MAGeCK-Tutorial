@@ -342,6 +342,7 @@ MAGeCK/
   - 已写好 `merge_fastq -> mageck count -> mageck test` 的最小工作流骨架
 - `MAGeCK/full/envs/mageck.yml`
 - `MAGeCK/full/envs/sra-tools.yml`
+- `MAGeCK/full/scripts/fetch_brunello_library.py`
 
 ### 当前唯一的硬阻塞
 
@@ -353,4 +354,4 @@ MAGeCK/
 
 - `MAGeCK/full/external/brunello/library.tsv`
 
-下一步最合理的动作，就是把这份 full Brunello annotation 的一手来源也锁定并接进工作流。
+这一步现在已经接入了抓取脚本，但 Addgene 媒体源在当前环境中响应较慢，正式下载时建议单独执行脚本并保留重试。

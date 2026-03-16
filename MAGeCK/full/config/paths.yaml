@@ -14,3 +14,7 @@ article1:
     - BrunelloMod_A375_repC
 notes:
   library_annotation_source: "Provide the full Brunello library annotation before running mageck count. Do not reuse the toy library from MAGeCK/repro/data/basic/library.txt."
+
+fetchers:
+  library_fetch_script: scripts/fetch_brunello_library.py
+  library_source_url: "https://media.addgene.org/cms/filer_public/f8/f7/f8f73d69-94f5-4382-bf5f-658c78e38f2f/broadgpp-brunello-library-contents.txt"
