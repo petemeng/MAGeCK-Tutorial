@@ -1,96 +1,96 @@
-INFO  @ Sun, 15 Mar 2026 22:00:18: Parameters: /home/data/t060551/.local/bin/mageck count -l data/basic/library.txt --fastq data/basic/CTRL_rep1.fastq data/basic/CTRL_rep2.fastq data/basic/TREAT_rep1.fastq data/basic/TREAT_rep2.fastq --sample-label CTRL_rep1,CTRL_rep2,TREAT_rep1,TREAT_rep2 -n results/mageck_count 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Welcome to MAGeCK v0.5.9.5. Command: count 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Loading 2550 predefined sgRNAs. 
-WARNING @ Sun, 15 Mar 2026 22:00:18: There are 0 sgRNAs with duplicated sequences. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Parsing FASTQ file data/basic/CTRL_rep1.fastq... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Determining the trim-5 length of FASTQ file data/basic/CTRL_rep1.fastq... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Possible gRNA lengths:20 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Processing 0M reads ... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Read length:30 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Total tested reads: 2500, mapped: 1453(0.5812) 
-INFO  @ Sun, 15 Mar 2026 22:00:18: --trim-5 test data: (trim_length reads fraction) 
-INFO  @ Sun, 15 Mar 2026 22:00:18: 0	1453	1.0 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Auto determination of trim5 results: 0 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Possible gRNA lengths:20 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Processing 0M reads .. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Total: 2500. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Mapped: 1453. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Parsing FASTQ file data/basic/CTRL_rep2.fastq... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Determining the trim-5 length of FASTQ file data/basic/CTRL_rep2.fastq... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Possible gRNA lengths:20 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Processing 0M reads ... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Read length:30 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Total tested reads: 2500, mapped: 1453(0.5812) 
-INFO  @ Sun, 15 Mar 2026 22:00:18: --trim-5 test data: (trim_length reads fraction) 
-INFO  @ Sun, 15 Mar 2026 22:00:18: 0	1453	1.0 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Auto determination of trim5 results: 0 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Possible gRNA lengths:20 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Processing 0M reads .. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Total: 2500. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Mapped: 1453. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Parsing FASTQ file data/basic/TREAT_rep1.fastq... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Determining the trim-5 length of FASTQ file data/basic/TREAT_rep1.fastq... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Possible gRNA lengths:20 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Processing 0M reads ... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Read length:30 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Total tested reads: 2500, mapped: 1471(0.5884) 
-INFO  @ Sun, 15 Mar 2026 22:00:18: --trim-5 test data: (trim_length reads fraction) 
-INFO  @ Sun, 15 Mar 2026 22:00:18: 0	1471	1.0 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Auto determination of trim5 results: 0 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Possible gRNA lengths:20 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Processing 0M reads .. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Total: 2500. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Mapped: 1471. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Parsing FASTQ file data/basic/TREAT_rep2.fastq... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Determining the trim-5 length of FASTQ file data/basic/TREAT_rep2.fastq... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Possible gRNA lengths:20 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Processing 0M reads ... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Read length:30 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Total tested reads: 2500, mapped: 1471(0.5884) 
-INFO  @ Sun, 15 Mar 2026 22:00:18: --trim-5 test data: (trim_length reads fraction) 
-INFO  @ Sun, 15 Mar 2026 22:00:18: 0	1471	1.0 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Auto determination of trim5 results: 0 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Possible gRNA lengths:20 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Processing 0M reads .. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Total: 2500. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Mapped: 1471. 
-DEBUG @ Sun, 15 Mar 2026 22:00:18: Initial (total) size factor: 1.006194081211287 1.006194081211287 0.9938817131203264 0.9938817131203264 
-WARNING @ Sun, 15 Mar 2026 22:00:18: Sample 0 has zero median count, so median normalization is not possible. Switch to total read count normalization. 
-WARNING @ Sun, 15 Mar 2026 22:00:18: Sample 0 has too many zero-count sgRNAs (0.5003921568627451), and median normalization is unstable. Switch to total read count normalization. 
-WARNING @ Sun, 15 Mar 2026 22:00:18: Sample 1 has zero median count, so median normalization is not possible. Switch to total read count normalization. 
-WARNING @ Sun, 15 Mar 2026 22:00:18: Sample 1 has too many zero-count sgRNAs (0.5003921568627451), and median normalization is unstable. Switch to total read count normalization. 
-WARNING @ Sun, 15 Mar 2026 22:00:18: Sample 2 has too many zero-count sgRNAs (0.47019607843137257), and median normalization is unstable. Switch to total read count normalization. 
-WARNING @ Sun, 15 Mar 2026 22:00:18: Sample 3 has too many zero-count sgRNAs (0.47019607843137257), and median normalization is unstable. Switch to total read count normalization. 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Final size factor: 1.006194081211287 1.006194081211287 0.9938817131203264 0.9938817131203264 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Summary of file data/basic/CTRL_rep1.fastq: 
-INFO  @ Sun, 15 Mar 2026 22:00:18: label	CTRL_rep1 
-INFO  @ Sun, 15 Mar 2026 22:00:18: reads	2500 
-INFO  @ Sun, 15 Mar 2026 22:00:18: mappedreads	1453 
-INFO  @ Sun, 15 Mar 2026 22:00:18: totalsgrnas	2550 
-INFO  @ Sun, 15 Mar 2026 22:00:18: zerosgrnas	1276 
-INFO  @ Sun, 15 Mar 2026 22:00:18: giniindex	0.5266899931488773 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Summary of file data/basic/CTRL_rep2.fastq: 
-INFO  @ Sun, 15 Mar 2026 22:00:18: label	CTRL_rep2 
-INFO  @ Sun, 15 Mar 2026 22:00:18: reads	2500 
-INFO  @ Sun, 15 Mar 2026 22:00:18: mappedreads	1453 
-INFO  @ Sun, 15 Mar 2026 22:00:18: totalsgrnas	2550 
-INFO  @ Sun, 15 Mar 2026 22:00:18: zerosgrnas	1276 
-INFO  @ Sun, 15 Mar 2026 22:00:18: giniindex	0.5266899931488773 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Summary of file data/basic/TREAT_rep1.fastq: 
-INFO  @ Sun, 15 Mar 2026 22:00:18: label	TREAT_rep1 
-INFO  @ Sun, 15 Mar 2026 22:00:18: reads	2500 
-INFO  @ Sun, 15 Mar 2026 22:00:18: mappedreads	1471 
-INFO  @ Sun, 15 Mar 2026 22:00:18: totalsgrnas	2550 
-INFO  @ Sun, 15 Mar 2026 22:00:18: zerosgrnas	1199 
-INFO  @ Sun, 15 Mar 2026 22:00:18: giniindex	0.4930917310247763 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Summary of file data/basic/TREAT_rep2.fastq: 
-INFO  @ Sun, 15 Mar 2026 22:00:18: label	TREAT_rep2 
-INFO  @ Sun, 15 Mar 2026 22:00:18: reads	2500 
-INFO  @ Sun, 15 Mar 2026 22:00:18: mappedreads	1471 
-INFO  @ Sun, 15 Mar 2026 22:00:18: totalsgrnas	2550 
-INFO  @ Sun, 15 Mar 2026 22:00:18: zerosgrnas	1199 
-INFO  @ Sun, 15 Mar 2026 22:00:18: giniindex	0.4930917310247763 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/count_report.Rmd. 
-DEBUG @ Sun, 15 Mar 2026 22:00:18: Setting up the visualization module... 
-INFO  @ Sun, 15 Mar 2026 22:00:18: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/fastq_template.Rnw. 
-DEBUG @ Sun, 15 Mar 2026 22:00:18: Setting up the visualization module... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Parameters: /home/data/t060551/.local/bin/mageck count -l data/basic/library.txt --fastq data/basic/CTRL_rep1.fastq data/basic/CTRL_rep2.fastq data/basic/TREAT_rep1.fastq data/basic/TREAT_rep2.fastq --sample-label CTRL_rep1,CTRL_rep2,TREAT_rep1,TREAT_rep2 -n results/mageck_count 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Welcome to MAGeCK v0.5.9.5. Command: count 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Loading 2550 predefined sgRNAs. 
+WARNING @ Mon, 16 Mar 2026 08:45:10: There are 0 sgRNAs with duplicated sequences. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Parsing FASTQ file data/basic/CTRL_rep1.fastq... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Determining the trim-5 length of FASTQ file data/basic/CTRL_rep1.fastq... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Possible gRNA lengths:20 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Processing 0M reads ... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Read length:30 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Total tested reads: 2500, mapped: 1453(0.5812) 
+INFO  @ Mon, 16 Mar 2026 08:45:10: --trim-5 test data: (trim_length reads fraction) 
+INFO  @ Mon, 16 Mar 2026 08:45:10: 0	1453	1.0 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Auto determination of trim5 results: 0 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Possible gRNA lengths:20 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Processing 0M reads .. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Total: 2500. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Mapped: 1453. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Parsing FASTQ file data/basic/CTRL_rep2.fastq... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Determining the trim-5 length of FASTQ file data/basic/CTRL_rep2.fastq... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Possible gRNA lengths:20 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Processing 0M reads ... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Read length:30 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Total tested reads: 2500, mapped: 1453(0.5812) 
+INFO  @ Mon, 16 Mar 2026 08:45:10: --trim-5 test data: (trim_length reads fraction) 
+INFO  @ Mon, 16 Mar 2026 08:45:10: 0	1453	1.0 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Auto determination of trim5 results: 0 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Possible gRNA lengths:20 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Processing 0M reads .. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Total: 2500. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Mapped: 1453. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Parsing FASTQ file data/basic/TREAT_rep1.fastq... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Determining the trim-5 length of FASTQ file data/basic/TREAT_rep1.fastq... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Possible gRNA lengths:20 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Processing 0M reads ... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Read length:30 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Total tested reads: 2500, mapped: 1471(0.5884) 
+INFO  @ Mon, 16 Mar 2026 08:45:10: --trim-5 test data: (trim_length reads fraction) 
+INFO  @ Mon, 16 Mar 2026 08:45:10: 0	1471	1.0 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Auto determination of trim5 results: 0 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Possible gRNA lengths:20 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Processing 0M reads .. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Total: 2500. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Mapped: 1471. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Parsing FASTQ file data/basic/TREAT_rep2.fastq... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Determining the trim-5 length of FASTQ file data/basic/TREAT_rep2.fastq... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Possible gRNA lengths:20 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Processing 0M reads ... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Read length:30 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Total tested reads: 2500, mapped: 1471(0.5884) 
+INFO  @ Mon, 16 Mar 2026 08:45:10: --trim-5 test data: (trim_length reads fraction) 
+INFO  @ Mon, 16 Mar 2026 08:45:10: 0	1471	1.0 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Auto determination of trim5 results: 0 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Possible gRNA lengths:20 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Processing 0M reads .. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Total: 2500. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Mapped: 1471. 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Initial (total) size factor: 1.006194081211287 1.006194081211287 0.9938817131203264 0.9938817131203264 
+WARNING @ Mon, 16 Mar 2026 08:45:10: Sample 0 has zero median count, so median normalization is not possible. Switch to total read count normalization. 
+WARNING @ Mon, 16 Mar 2026 08:45:10: Sample 0 has too many zero-count sgRNAs (0.5003921568627451), and median normalization is unstable. Switch to total read count normalization. 
+WARNING @ Mon, 16 Mar 2026 08:45:10: Sample 1 has zero median count, so median normalization is not possible. Switch to total read count normalization. 
+WARNING @ Mon, 16 Mar 2026 08:45:10: Sample 1 has too many zero-count sgRNAs (0.5003921568627451), and median normalization is unstable. Switch to total read count normalization. 
+WARNING @ Mon, 16 Mar 2026 08:45:10: Sample 2 has too many zero-count sgRNAs (0.47019607843137257), and median normalization is unstable. Switch to total read count normalization. 
+WARNING @ Mon, 16 Mar 2026 08:45:10: Sample 3 has too many zero-count sgRNAs (0.47019607843137257), and median normalization is unstable. Switch to total read count normalization. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Final size factor: 1.006194081211287 1.006194081211287 0.9938817131203264 0.9938817131203264 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Summary of file data/basic/CTRL_rep1.fastq: 
+INFO  @ Mon, 16 Mar 2026 08:45:10: label	CTRL_rep1 
+INFO  @ Mon, 16 Mar 2026 08:45:10: reads	2500 
+INFO  @ Mon, 16 Mar 2026 08:45:10: mappedreads	1453 
+INFO  @ Mon, 16 Mar 2026 08:45:10: totalsgrnas	2550 
+INFO  @ Mon, 16 Mar 2026 08:45:10: zerosgrnas	1276 
+INFO  @ Mon, 16 Mar 2026 08:45:10: giniindex	0.5266899931488773 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Summary of file data/basic/CTRL_rep2.fastq: 
+INFO  @ Mon, 16 Mar 2026 08:45:10: label	CTRL_rep2 
+INFO  @ Mon, 16 Mar 2026 08:45:10: reads	2500 
+INFO  @ Mon, 16 Mar 2026 08:45:10: mappedreads	1453 
+INFO  @ Mon, 16 Mar 2026 08:45:10: totalsgrnas	2550 
+INFO  @ Mon, 16 Mar 2026 08:45:10: zerosgrnas	1276 
+INFO  @ Mon, 16 Mar 2026 08:45:10: giniindex	0.5266899931488773 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Summary of file data/basic/TREAT_rep1.fastq: 
+INFO  @ Mon, 16 Mar 2026 08:45:10: label	TREAT_rep1 
+INFO  @ Mon, 16 Mar 2026 08:45:10: reads	2500 
+INFO  @ Mon, 16 Mar 2026 08:45:10: mappedreads	1471 
+INFO  @ Mon, 16 Mar 2026 08:45:10: totalsgrnas	2550 
+INFO  @ Mon, 16 Mar 2026 08:45:10: zerosgrnas	1199 
+INFO  @ Mon, 16 Mar 2026 08:45:10: giniindex	0.4930917310247763 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Summary of file data/basic/TREAT_rep2.fastq: 
+INFO  @ Mon, 16 Mar 2026 08:45:10: label	TREAT_rep2 
+INFO  @ Mon, 16 Mar 2026 08:45:10: reads	2500 
+INFO  @ Mon, 16 Mar 2026 08:45:10: mappedreads	1471 
+INFO  @ Mon, 16 Mar 2026 08:45:10: totalsgrnas	2550 
+INFO  @ Mon, 16 Mar 2026 08:45:10: zerosgrnas	1199 
+INFO  @ Mon, 16 Mar 2026 08:45:10: giniindex	0.4930917310247763 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/count_report.Rmd. 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Setting up the visualization module... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/fastq_template.Rnw. 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Setting up the visualization module... 

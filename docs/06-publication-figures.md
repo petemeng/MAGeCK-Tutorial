@@ -329,7 +329,7 @@ cat("组合图导出完成。\n")
 
 ![主图：6-panel 组合图](assets/figures/Figure_main.png)
 
-**组合图：CRISPR 筛选核心结果。** (A) sgRNA 排名图标注关键 essential 和 enriched genes。(B) 基因层面火山图。(C) MLE beta score 全基因组分布。(D) Essential genes 的 KEGG 通路富集。(E) Top 6 essential genes 的 sgRNA 一致性展示（4/4 全部 dropout）。(F) 与 DepMap common essential genes 的交叉验证。
+**组合图：CRISPR 筛选核心结果。** (A) sgRNA 排名图标注关键 essential genes。(B) 基因层面火山图。(C) MLE beta score 分布。(D) Essential genes 的 KEGG 通路富集。(E) Top 6 essential genes 的 sgRNA 一致性展示（多条 sgRNA 共同 dropout）。(F) 与 DepMap-demo essential genes 的交叉验证。
 
 💡 **经验之谈：patchwork 拼图的微调技巧**
 
@@ -347,23 +347,23 @@ cat("组合图导出完成。\n")
 stats_table <- tribble(
     ~Analysis, ~Method, ~Key_Result, ~Tutorial,
     "sgRNA 计数", "MAGeCK count",
-    "比对率 88-92%, T0 Gini 0.10", "第1篇",
+    "比对率 58.1%-58.8%", "第1篇",
     "Essential genes (RRA)", "MAGeCK test",
-    "1,687 genes (FDR<0.05)", "第1篇",
+    "36 genes (FDR<0.05)", "第1篇",
     "Enriched genes (RRA)", "MAGeCK test",
-    "234 genes (FDR<0.05)", "第1篇",
-    "sgRNA 一致性", "4/4 consistency",
-    "Top 10 中 9/10 基因 4/4 一致", "第1篇",
+    "0 genes (FDR<0.05)", "第1篇",
+    "sgRNA 一致性", "multi-sgRNA support",
+    "Top hits 常见 7-10 条 sgRNA 同向耗竭", "第1篇",
     "Essential genes (MLE)", "MAGeCK MLE",
-    "1,823 genes (FDR<0.05)", "第2篇",
-    "MLE vs RRA 相关", "Pearson r",
-    "r = 0.96", "第2篇",
+    "48 genes (FDR<0.05)", "第2篇",
+    "MLE vs RRA 相关", "Overlap",
+    "30 shared essential genes", "第2篇",
     "KEGG Top 通路", "clusterProfiler",
-    "Ribosome (p=1.2e-42)", "第3篇",
+    "Ribosome", "第3篇",
     "CN bias", "Pearson r (CN vs LFC)",
-    "r = -0.12 (可控)", "第3篇",
+    "r = -0.045", "第3篇",
     "DepMap 覆盖率", "交叉验证",
-    "93.3% common essential 被检出", "第3篇")
+    "36/102 demo essential 重叠", "第3篇")
 ```
 
 ```r
@@ -372,15 +372,15 @@ stats_table <- tribble(
 stats_table <- bind_rows(stats_table, tribble(
     ~Analysis, ~Method, ~Key_Result, ~Tutorial,
     "CRISPRi essential", "MAGeCK test",
-    "1,456 genes (FDR<0.05)", "第4篇",
+    "9 genes (FDR<0.05)", "第4篇",
     "CRISPRi∩CRISPRko", "交集",
-    "1,312 genes", "第4篇",
+    "8 genes", "第4篇",
     "合成致死 (olaparib)", "MLE interaction",
-    "247 genes (drug|FDR<0.05)", "第5篇",
+    "32 genes (drug|FDR<0.05)", "第5篇",
     "抵抗基因 (olaparib)", "MLE interaction",
-    "156 genes (drug|FDR<0.05)", "第5篇",
+    "13 genes (drug|FDR<0.05)", "第5篇",
     "SL Top 通路", "KEGG enrichment",
-    "HR pathway (p=1.2e-18)", "第5篇"))
+    "HR pathway", "第5篇"))
 
 write_tsv(stats_table, "results/statistics_summary.tsv")
 cat("统计汇总表:", nrow(stats_table), "条记录\n")
@@ -401,13 +401,13 @@ cat("统计汇总表:", nrow(stats_table), "条记录\n")
 
 **频率：** ★★★★★（几乎每篇 CRISPRko 论文都会被问）
 
-**应对：** 在 Methods 中明确写一句："We examined the correlation between copy number and sgRNA depletion (Pearson r = -0.12, Fig. SX), confirming that copy number bias was minimal in our dataset." 如果 r > 0.3，用 CRISPRcleanR 校正并报告校正前后的结果。如果你用的是 CRISPRi，直接说"CRISPRi is not susceptible to copy number bias as dCas9 does not induce DNA double-strand breaks"——这是 CRISPRi 的杀手锏回答。
+**应对：** 在 Methods 中明确写一句："We examined the correlation between copy number and sgRNA depletion (Pearson r = -0.045 in the demo analysis, Fig. SX), suggesting that copy number bias was weak in this teaching dataset." 如果 r > 0.3，用 CRISPRcleanR 校正并报告校正前后的结果。如果你用的是 CRISPRi，直接说"CRISPRi is not susceptible to copy number bias as dCas9 does not induce DNA double-strand breaks"——这是 CRISPRi 的杀手锏回答。
 
 ### Q2："sgRNA 一致性怎么样？"
 
 **频率：** ★★★★★
 
-**应对：** 在 Supplementary 中放一张 top hits 的 sgRNA-level barplot（第 1 篇图 3 的格式）。文字写："For the top 10 essential genes, 9/10 showed 4/4 sgRNA consistency (all 4 sgRNAs depleted), and 1/10 showed 3/4 consistency." 如果某个关键 hit 只有 2/4 一致性，必须在 Discussion 中承认并解释。
+**应对：** 在 Supplementary 中放一张 top hits 的 sgRNA-level barplot（第 1 篇图 3 的格式）。文字写："For the top essential genes in the demo screen, most hits were supported by multiple concordant sgRNAs rather than a single outlier guide." 如果某个关键 hit 只有 2/4 一致性，必须在 Discussion 中承认并解释。
 
 ### Q3："你和 DepMap 的数据比较了吗？"
 
@@ -431,7 +431,7 @@ cat("统计汇总表:", nrow(stats_table), "条记录\n")
 
 **频率：** ★★★☆☆
 
-**应对：** 报告两个数字：（1）每条 sgRNA 的平均 read 数（推荐 > 300）；（2）T0 中计数为 0 的 sgRNA 数（应 < 1%）。"The average read count per sgRNA was ~215 in T0 samples, with only 245/77,440 sgRNAs (0.3%) having zero counts, indicating adequate library representation."
+**应对：** 报告两个数字：（1）每条 sgRNA 的平均 read 数（推荐 > 300）；（2）T0 中计数为 0 的 sgRNA 数（应 < 1%）。"In the teaching FASTQ subset, each sample contains only 2,500 reads and is intended solely to demonstrate the count workflow; library representation should be evaluated on the full screen rather than this toy subset."
 
 ### Q7："非靶向对照 sgRNA 的表现如何？"
 

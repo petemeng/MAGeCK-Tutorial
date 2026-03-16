@@ -1,76 +1,76 @@
-INFO  @ Sun, 15 Mar 2026 22:17:30: Parameters: /home/data/t060551/.local/bin/mageck test -k data/mle/leukemia.new.csv -t HL60.final,KBM7.final -c HL60.initial,KBM7.initial -n results/mageck_test --normcounts-to-file 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Welcome to MAGeCK v0.5.9.5. Command: test 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Loading count table from data/mle/leukemia.new.csv  
-INFO  @ Sun, 15 Mar 2026 22:17:30: Processing 1 lines.. 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Parsing error in line 1 (usually the header line). Skip this line. 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Loaded 9999 records. 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/test_report.Rmd. 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Setting up the visualization module... 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.RTemplate. 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template_indvgene.RTemplate. 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.Rnw. 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Setting up the visualization module... 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Given sample labels: HL60.final,KBM7.final 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Converted index: 2 3 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Treatment samples:HL60.final,KBM7.final 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Treatment sample index:2,3 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Given sample labels: HL60.initial,KBM7.initial 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Converted index: 0 1 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Control samples:HL60.initial,KBM7.initial 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Control sample index:0,1 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Initial (total) size factor: 1.6198865283823018 1.951240006963322 0.7358132596720757 0.6617530532588767 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Median factor: 1.442249601678541 1.7230150968794973 0.6481594964068652 0.5825227366611764 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Final size factor: 1.442249601678541 1.7230150968794973 0.6481594964068652 0.5825227366611764 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Writing normalized read counts to results/mageck_test.normalized.txt 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Detecting outliers from variance estimation.. Avg read count:[703.9285865773195], Var: [242565.36204314552] 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Skipping 42 sgRNAs from variance calculation because of their extreme high counts (> 4* STD (mean counts) ). 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: Adjusted model: 1.036946620445846	4.371476602746411 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Before RRA, 8 sgRNAs are removed with zero counts in both group(s). 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Use qnorm to reversely calculate sgRNA scores ... 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: lower test FDR cutoff: 0.33910519467520767 
-DEBUG @ Sun, 15 Mar 2026 22:17:30: higher test FDR cutoff: 0.3720348313482134 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Running command: RRA -i results/mageck_test.plow.txt -o results/mageck_test.gene.low.txt -p 0.33910519467520767 --skip-gene NA --skip-gene na  
-INFO  @ Sun, 15 Mar 2026 22:17:30: Command message: 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Welcome to RRA v 0.5.9. 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Skipping gene NA for permutation ... 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Skipping gene na for permutation ... 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Reading input file... 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Summary: 9991 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Computing lo-values for each group... 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Computing false discovery rate... 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Permuting genes with 9 sgRNAs... 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Permuting genes with 10 sgRNAs... 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Number of genes under FDR adjustment: 1000 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Saving to output file... 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   RRA completed. 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Groups deletion complete. 
-INFO  @ Sun, 15 Mar 2026 22:17:30:   Lists deletion complete. 
-INFO  @ Sun, 15 Mar 2026 22:17:30:    
-INFO  @ Sun, 15 Mar 2026 22:17:30: End command message. 
-INFO  @ Sun, 15 Mar 2026 22:17:30: Running command: RRA -i results/mageck_test.phigh.txt -o results/mageck_test.gene.high.txt -p 0.3720348313482134 --skip-gene NA --skip-gene na  
-INFO  @ Sun, 15 Mar 2026 22:17:31: Command message: 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Welcome to RRA v 0.5.9. 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Skipping gene NA for permutation ... 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Skipping gene na for permutation ... 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Reading input file... 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Summary: 9991 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Computing lo-values for each group... 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Computing false discovery rate... 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Permuting genes with 9 sgRNAs... 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Permuting genes with 10 sgRNAs... 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Number of genes under FDR adjustment: 1000 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Saving to output file... 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   RRA completed. 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Groups deletion complete. 
-INFO  @ Sun, 15 Mar 2026 22:17:31:   Lists deletion complete. 
-INFO  @ Sun, 15 Mar 2026 22:17:31:    
-INFO  @ Sun, 15 Mar 2026 22:17:31: End command message. 
-DEBUG @ Sun, 15 Mar 2026 22:17:31: Sorting the merged items by negative selection... 
-INFO  @ Sun, 15 Mar 2026 22:17:31: Loading top 10 genes from results/mageck_test.gene.low.txt: C1orf109,ANAPC4,C7orf26,C3orf17,C14orf80,C16orf80,ANAPC2,C9orf78,C9orf41,BUB3 
-DEBUG @ Sun, 15 Mar 2026 22:17:31: Column index:3 
-INFO  @ Sun, 15 Mar 2026 22:17:31: Loading top 10 genes from results/mageck_test.gene.high.txt: BIN1,C7orf34,CAMK1G,CASP8,ANKK1,C9orf69,CAMKV,BRSK2,BRE,BNC2 
-DEBUG @ Sun, 15 Mar 2026 22:17:31: Column index:9 
-INFO  @ Sun, 15 Mar 2026 22:17:31: Running command: rm results/mageck_test.plow.txt 
-INFO  @ Sun, 15 Mar 2026 22:17:31: Running command: rm results/mageck_test.phigh.txt 
-INFO  @ Sun, 15 Mar 2026 22:17:31: Running command: rm results/mageck_test.gene.low.txt 
-INFO  @ Sun, 15 Mar 2026 22:17:31: Running command: rm results/mageck_test.gene.high.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Parameters: /home/data/t060551/.local/bin/mageck test -k data/mle/leukemia.new.csv -t HL60.final,KBM7.final -c HL60.initial,KBM7.initial -n results/mageck_test --normcounts-to-file 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Welcome to MAGeCK v0.5.9.5. Command: test 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Loading count table from data/mle/leukemia.new.csv  
+INFO  @ Mon, 16 Mar 2026 08:45:10: Processing 1 lines.. 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Parsing error in line 1 (usually the header line). Skip this line. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Loaded 9999 records. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/test_report.Rmd. 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Setting up the visualization module... 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.RTemplate. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template_indvgene.RTemplate. 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.Rnw. 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Setting up the visualization module... 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Given sample labels: HL60.final,KBM7.final 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Converted index: 2 3 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Treatment samples:HL60.final,KBM7.final 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Treatment sample index:2,3 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Given sample labels: HL60.initial,KBM7.initial 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Converted index: 0 1 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Control samples:HL60.initial,KBM7.initial 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Control sample index:0,1 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Initial (total) size factor: 1.6198865283823018 1.951240006963322 0.7358132596720757 0.6617530532588767 
+DEBUG @ Mon, 16 Mar 2026 08:45:10: Median factor: 1.442249601678541 1.7230150968794973 0.6481594964068652 0.5825227366611764 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Final size factor: 1.442249601678541 1.7230150968794973 0.6481594964068652 0.5825227366611764 
+INFO  @ Mon, 16 Mar 2026 08:45:10: Writing normalized read counts to results/mageck_test.normalized.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Detecting outliers from variance estimation.. Avg read count:[703.9285865773195], Var: [242565.36204314552] 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Skipping 42 sgRNAs from variance calculation because of their extreme high counts (> 4* STD (mean counts) ). 
+DEBUG @ Mon, 16 Mar 2026 08:45:11: Adjusted model: 1.036946620445846	4.371476602746411 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Before RRA, 8 sgRNAs are removed with zero counts in both group(s). 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Use qnorm to reversely calculate sgRNA scores ... 
+DEBUG @ Mon, 16 Mar 2026 08:45:11: lower test FDR cutoff: 0.33910519467520767 
+DEBUG @ Mon, 16 Mar 2026 08:45:11: higher test FDR cutoff: 0.3720348313482134 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Running command: RRA -i results/mageck_test.plow.txt -o results/mageck_test.gene.low.txt -p 0.33910519467520767 --skip-gene NA --skip-gene na  
+INFO  @ Mon, 16 Mar 2026 08:45:11: Command message: 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Welcome to RRA v 0.5.9. 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Skipping gene NA for permutation ... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Skipping gene na for permutation ... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Reading input file... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Summary: 9991 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Computing lo-values for each group... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Computing false discovery rate... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Permuting genes with 9 sgRNAs... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Permuting genes with 10 sgRNAs... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Number of genes under FDR adjustment: 1000 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Saving to output file... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   RRA completed. 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Groups deletion complete. 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Lists deletion complete. 
+INFO  @ Mon, 16 Mar 2026 08:45:11:    
+INFO  @ Mon, 16 Mar 2026 08:45:11: End command message. 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Running command: RRA -i results/mageck_test.phigh.txt -o results/mageck_test.gene.high.txt -p 0.3720348313482134 --skip-gene NA --skip-gene na  
+INFO  @ Mon, 16 Mar 2026 08:45:11: Command message: 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Welcome to RRA v 0.5.9. 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Skipping gene NA for permutation ... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Skipping gene na for permutation ... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Reading input file... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Summary: 9991 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Computing lo-values for each group... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Computing false discovery rate... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Permuting genes with 9 sgRNAs... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Permuting genes with 10 sgRNAs... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Number of genes under FDR adjustment: 1000 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Saving to output file... 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   RRA completed. 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Groups deletion complete. 
+INFO  @ Mon, 16 Mar 2026 08:45:11:   Lists deletion complete. 
+INFO  @ Mon, 16 Mar 2026 08:45:11:    
+INFO  @ Mon, 16 Mar 2026 08:45:11: End command message. 
+DEBUG @ Mon, 16 Mar 2026 08:45:11: Sorting the merged items by negative selection... 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Loading top 10 genes from results/mageck_test.gene.low.txt: C1orf109,ANAPC4,C7orf26,C3orf17,C14orf80,C16orf80,ANAPC2,C9orf78,C9orf41,BUB3 
+DEBUG @ Mon, 16 Mar 2026 08:45:11: Column index:3 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Loading top 10 genes from results/mageck_test.gene.high.txt: BIN1,C7orf34,CAMK1G,CASP8,ANKK1,C9orf69,CAMKV,BRSK2,BRE,BNC2 
+DEBUG @ Mon, 16 Mar 2026 08:45:11: Column index:9 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Running command: rm results/mageck_test.plow.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Running command: rm results/mageck_test.phigh.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Running command: rm results/mageck_test.gene.low.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:11: Running command: rm results/mageck_test.gene.high.txt 

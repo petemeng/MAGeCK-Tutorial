@@ -1,74 +1,74 @@
-INFO  @ Sun, 15 Mar 2026 22:26:27: Parameters: /home/data/t060551/.local/bin/mageck test -k data/crispri/count_table.txt -t T12_rep1,T12_rep2 -c T0_rep1,T0_rep2 -n results/crispri_test --gene-lfc-method alphamedian --normcounts-to-file 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Welcome to MAGeCK v0.5.9.5. Command: test 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Loading count table from data/crispri/count_table.txt  
-INFO  @ Sun, 15 Mar 2026 22:26:27: Processing 1 lines.. 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Parsing error in line 1 (usually the header line). Skip this line. 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Loaded 5000 records. 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/test_report.Rmd. 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Setting up the visualization module... 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.RTemplate. 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template_indvgene.RTemplate. 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.Rnw. 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Setting up the visualization module... 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Given sample labels: T12_rep1,T12_rep2 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Converted index: 2 3 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Treatment samples:T12_rep1,T12_rep2 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Treatment sample index:2,3 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Given sample labels: T0_rep1,T0_rep2 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Converted index: 0 1 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Control samples:T0_rep1,T0_rep2 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Control sample index:0,1 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Initial (total) size factor: 0.979541182547205 0.98064484868516 1.0218740849136634 1.0195939846945037 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Median factor: 0.9768930725426324 0.9754697998256668 1.0236841184313805 1.0237888115136418 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Final size factor: 0.9768930725426324 0.9754697998256668 1.0236841184313805 1.0237888115136418 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Writing normalized read counts to results/crispri_test.normalized.txt 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Detecting outliers from variance estimation.. Avg read count:[485.0999056021551], Var: [61552.23328223923] 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Skipping 1 sgRNAs from variance calculation because of their extreme high counts (> 4* STD (mean counts) ). 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: Adjusted model: 1.8234372382043353	0 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Before RRA, 0 sgRNAs are removed with zero counts in both group(s). 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Use qnorm to reversely calculate sgRNA scores ... 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: lower test FDR cutoff: 0.0634 
-DEBUG @ Sun, 15 Mar 2026 22:26:27: higher test FDR cutoff: 0.0824 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Running command: RRA -i results/crispri_test.plow.txt -o results/crispri_test.gene.low.txt -p 0.0634 --skip-gene NA --skip-gene na  
-INFO  @ Sun, 15 Mar 2026 22:26:27: Command message: 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Welcome to RRA v 0.5.9. 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Skipping gene NA for permutation ... 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Skipping gene na for permutation ... 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Reading input file... 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Summary: 5000 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Computing lo-values for each group... 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Computing false discovery rate... 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Permuting genes with 5 sgRNAs... 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Number of genes under FDR adjustment: 1000 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Saving to output file... 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   RRA completed. 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Groups deletion complete. 
-INFO  @ Sun, 15 Mar 2026 22:26:27:   Lists deletion complete. 
-INFO  @ Sun, 15 Mar 2026 22:26:27:    
-INFO  @ Sun, 15 Mar 2026 22:26:27: End command message. 
-INFO  @ Sun, 15 Mar 2026 22:26:27: Running command: RRA -i results/crispri_test.phigh.txt -o results/crispri_test.gene.high.txt -p 0.0824 --skip-gene NA --skip-gene na  
-INFO  @ Sun, 15 Mar 2026 22:26:28: Command message: 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Welcome to RRA v 0.5.9. 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Skipping gene NA for permutation ... 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Skipping gene na for permutation ... 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Reading input file... 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Summary: 5000 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Computing lo-values for each group... 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Computing false discovery rate... 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Permuting genes with 5 sgRNAs... 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Number of genes under FDR adjustment: 1000 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Saving to output file... 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   RRA completed. 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Groups deletion complete. 
-INFO  @ Sun, 15 Mar 2026 22:26:28:   Lists deletion complete. 
-INFO  @ Sun, 15 Mar 2026 22:26:28:    
-INFO  @ Sun, 15 Mar 2026 22:26:28: End command message. 
-DEBUG @ Sun, 15 Mar 2026 22:26:28: Sorting the merged items by negative selection... 
-INFO  @ Sun, 15 Mar 2026 22:26:28: Loading top 10 genes from results/crispri_test.gene.low.txt: C1orf109,C7orf26,ANAPC7,ANAPC4,C3orf17,CAD,BUB3,C6orf57,C21orf59,C9orf41 
-DEBUG @ Sun, 15 Mar 2026 22:26:28: Column index:3 
-INFO  @ Sun, 15 Mar 2026 22:26:28: Loading top 10 genes from results/crispri_test.gene.high.txt: BBX,C9orf171,BHLHE41,C21orf58,BHLHE40,C20orf194,C4orf45,BCL6B,CCDC109B,CBX5 
-DEBUG @ Sun, 15 Mar 2026 22:26:28: Column index:9 
-INFO  @ Sun, 15 Mar 2026 22:26:28: Running command: rm results/crispri_test.plow.txt 
-INFO  @ Sun, 15 Mar 2026 22:26:28: Running command: rm results/crispri_test.phigh.txt 
-INFO  @ Sun, 15 Mar 2026 22:26:28: Running command: rm results/crispri_test.gene.low.txt 
-INFO  @ Sun, 15 Mar 2026 22:26:28: Running command: rm results/crispri_test.gene.high.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Parameters: /home/data/t060551/.local/bin/mageck test -k data/crispri/count_table.txt -t T12_rep1,T12_rep2 -c T0_rep1,T0_rep2 -n results/crispri_test --gene-lfc-method alphamedian --normcounts-to-file 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Welcome to MAGeCK v0.5.9.5. Command: test 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Loading count table from data/crispri/count_table.txt  
+INFO  @ Mon, 16 Mar 2026 08:45:43: Processing 1 lines.. 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Parsing error in line 1 (usually the header line). Skip this line. 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Loaded 5000 records. 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/test_report.Rmd. 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Setting up the visualization module... 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.RTemplate. 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Loading R template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template_indvgene.RTemplate. 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Loading Rnw template file: /home/data/t060551/.local/lib/python3.8/site-packages/mageck/plot_template.Rnw. 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Setting up the visualization module... 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Given sample labels: T12_rep1,T12_rep2 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Converted index: 2 3 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Treatment samples:T12_rep1,T12_rep2 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Treatment sample index:2,3 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Given sample labels: T0_rep1,T0_rep2 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Converted index: 0 1 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Control samples:T0_rep1,T0_rep2 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Control sample index:0,1 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Initial (total) size factor: 0.979541182547205 0.98064484868516 1.0218740849136634 1.0195939846945037 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Median factor: 0.9768930725426324 0.9754697998256668 1.0236841184313805 1.0237888115136418 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Final size factor: 0.9768930725426324 0.9754697998256668 1.0236841184313805 1.0237888115136418 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Writing normalized read counts to results/crispri_test.normalized.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Detecting outliers from variance estimation.. Avg read count:[485.0999056021551], Var: [61552.23328223923] 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Skipping 1 sgRNAs from variance calculation because of their extreme high counts (> 4* STD (mean counts) ). 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Adjusted model: 1.8234372382043353	0 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Before RRA, 0 sgRNAs are removed with zero counts in both group(s). 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Use qnorm to reversely calculate sgRNA scores ... 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: lower test FDR cutoff: 0.0634 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: higher test FDR cutoff: 0.0824 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Running command: RRA -i results/crispri_test.plow.txt -o results/crispri_test.gene.low.txt -p 0.0634 --skip-gene NA --skip-gene na  
+INFO  @ Mon, 16 Mar 2026 08:45:43: Command message: 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Welcome to RRA v 0.5.9. 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Skipping gene NA for permutation ... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Skipping gene na for permutation ... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Reading input file... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Summary: 5000 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Computing lo-values for each group... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Computing false discovery rate... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Permuting genes with 5 sgRNAs... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Number of genes under FDR adjustment: 1000 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Saving to output file... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   RRA completed. 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Groups deletion complete. 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Lists deletion complete. 
+INFO  @ Mon, 16 Mar 2026 08:45:43:    
+INFO  @ Mon, 16 Mar 2026 08:45:43: End command message. 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Running command: RRA -i results/crispri_test.phigh.txt -o results/crispri_test.gene.high.txt -p 0.0824 --skip-gene NA --skip-gene na  
+INFO  @ Mon, 16 Mar 2026 08:45:43: Command message: 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Welcome to RRA v 0.5.9. 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Skipping gene NA for permutation ... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Skipping gene na for permutation ... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Reading input file... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Summary: 5000 sgRNAs, 1000 genes, 1 lists; skipped sgRNAs:0 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Computing lo-values for each group... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Computing false discovery rate... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Permuting genes with 5 sgRNAs... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Number of genes under FDR adjustment: 1000 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Saving to output file... 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   RRA completed. 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Groups deletion complete. 
+INFO  @ Mon, 16 Mar 2026 08:45:43:   Lists deletion complete. 
+INFO  @ Mon, 16 Mar 2026 08:45:43:    
+INFO  @ Mon, 16 Mar 2026 08:45:43: End command message. 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Sorting the merged items by negative selection... 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Loading top 10 genes from results/crispri_test.gene.low.txt: C1orf109,C7orf26,ANAPC7,ANAPC4,C3orf17,CAD,BUB3,C6orf57,C21orf59,C9orf41 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Column index:3 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Loading top 10 genes from results/crispri_test.gene.high.txt: BBX,C9orf171,BHLHE41,C21orf58,BHLHE40,C20orf194,C4orf45,BCL6B,CCDC109B,CBX5 
+DEBUG @ Mon, 16 Mar 2026 08:45:43: Column index:9 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Running command: rm results/crispri_test.plow.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Running command: rm results/crispri_test.phigh.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Running command: rm results/crispri_test.gene.low.txt 
+INFO  @ Mon, 16 Mar 2026 08:45:43: Running command: rm results/crispri_test.gene.high.txt 

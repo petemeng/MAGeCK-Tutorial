@@ -295,7 +295,7 @@ CRISPRko essential (FDR<0.05): 36
 两者交集: 8
 ```
 
-**CRISPRi 检出略少于 CRISPRko（1,456 vs 1,687）——这是预期的**，因为 CRISPRi 的效应量天然更小。但 1,312 个交集基因说明两种方法的核心发现高度一致。
+**在这套 demo 数据里，CRISPRi 检出 9 个 essential genes，CRISPRko 检出 36 个，两者交集为 8。** 这个结果符合预期：CRISPRi 的效应量通常更温和、命中更少，但和 CRISPRko 的核心 essential 集仍有清晰重叠。
 
 ```r
 # CRISPRi vs CRISPRko LFC 散点图
@@ -329,7 +329,7 @@ ggsave("results/figures/pub_crispri_vs_ko.png",
 
 ![图 2：CRISPRi vs CRISPRko](assets/figures/pub_crispri_vs_ko.png)
 
-**图 2：CRISPRi vs CRISPRko 基因层面 LFC 比较。** 红色为两种方法都显著的基因（n=1,312），蓝色为仅 CRISPRi 显著，橙色为仅 CRISPRko 显著。注意散点整体位于对角线上方——CRISPRi 的 LFC 绝对值系统性地小于 CRISPRko，这反映了"部分抑制 vs 完全敲除"的效应量差异。
+**图 2：CRISPRi vs CRISPRko 基因层面 LFC 比较。** 红色为两种方法都显著的基因（n=8），蓝色为仅 CRISPRi 显著（n=1），橙色为仅 CRISPRko 显著（n=28）。注意散点整体位于对角线上方——CRISPRi 的 LFC 绝对值通常小于 CRISPRko，这反映了“部分抑制 vs 完全敲除”的效应量差异。
 
 ### CRISPRko 独有的 essential genes——拷贝数假阳性？
 
@@ -365,7 +365,7 @@ CRISPRko 独有 essential genes: 28
 全基因组平均 log2 CN: 0.002
 ```
 
-**CRISPRko 独有的 375 个 essential genes 的平均拷贝数（0.312）远高于全基因组平均（0.023）——强烈暗示这些基因中有很大一部分是拷贝数假阳性。** CRISPRi 因为不切 DNA，天然不受拷贝数偏差影响，所以没有检出这些基因。
+**CRISPRko-only 基因在这套 demo 数据里有 28 个，它们的平均 log2 copy number 为 0.044，而全基因组平均只有 0.002。** 这个差距说明：即便在教学数据中，也能看到“CRISPRko-only hits 更容易叠加 CN 效应”的趋势；CRISPRi 因为不切 DNA，天然规避了这类偏差。
 
 **这就是 CRISPRi 相对于 CRISPRko 最大的优势：更干净的信号，更少的假阳性。** 代价是效应量更小、需要更多 sgRNA 和更长的筛选时间。
 
@@ -525,7 +525,7 @@ results/figures/pub_crispra_dist.png     56K
 
 这一篇我们讨论了 CRISPRi 和 CRISPRa 筛选的特殊分析策略——它们和 CRISPRko 有三个本质区别。
 
-**无拷贝数偏差** 是 CRISPRi/a 最大的优势——dCas9 不切 DNA，高拷贝数区域不会产生 DNA 损伤假阳性。CRISPRko 独有的 375 个 essential genes 中，很大一部分可能是 CN bias 假阳性。
+**无拷贝数偏差** 是 CRISPRi/a 最大的优势——dCas9 不切 DNA，高拷贝数区域不会产生 DNA 损伤假阳性。在本教程的 demo 对比里，CRISPRko-only 的 28 个基因就显示出更高的平均 CN 信号。
 
 **sgRNA 效率高度依赖 TSS 距离** 是 CRISPRi/a 最大的分析挑战。TSS 距离 vs LFC 的 QC 图是判断数据质量的金标准——如果没有看到"TSS 附近效率最高"的模式，数据可能不可靠。
 
