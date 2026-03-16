@@ -26,6 +26,26 @@ class WeChatError(RuntimeError):
     pass
 
 
+def parse_json_response(resp: requests.Response, action: str) -> dict[str, Any]:
+    resp.raise_for_status()
+    try:
+        data = json.loads(resp.content.decode('utf-8'))
+    except Exception as exc:
+        raise WeChatError(f'{action} returned non-UTF8/invalid JSON: {exc}') from exc
+    return ensure_ok(data, action)
+
+
+def post_json_utf8(url: str, payload: dict[str, Any], *, params: dict[str, Any], timeout: int, action: str) -> dict[str, Any]:
+    resp = requests.post(
+        url,
+        params=params,
+        data=json.dumps(payload, ensure_ascii=False).encode('utf-8'),
+        headers={'Content-Type': 'application/json; charset=utf-8'},
+        timeout=timeout,
+    )
+    return parse_json_response(resp, action)
+
+
 def ensure_ok(data: dict[str, Any], action: str) -> dict[str, Any]:
     if 'errcode' in data and data.get('errcode', 0) not in (0,):
         raise WeChatError(f"{action} failed: errcode={data.get('errcode')} errmsg={data.get('errmsg')}")
@@ -38,9 +58,7 @@ def get_access_token(appid: str, secret: str) -> str:
         params={'grant_type': 'client_credential', 'appid': appid, 'secret': secret},
         timeout=30,
     )
-    response.raise_for_status()
-    data = response.json()
-    ensure_ok(data, 'get_access_token')
+    data = parse_json_response(response, 'get_access_token')
     token = data.get('access_token')
     if not token:
         raise WeChatError('Missing access_token in response')
@@ -56,8 +74,7 @@ def upload_inline_image(access_token: str, image_path: Path) -> str:
             files={'media': (image_path.name, handle, mime)},
             timeout=60,
         )
-    resp.raise_for_status()
-    data = ensure_ok(resp.json(), f'upload_inline_image({image_path.name})')
+    data = parse_json_response(resp, f'upload_inline_image({image_path.name})')
     url = data.get('url')
     if not url:
         raise WeChatError(f'upload_inline_image({image_path.name}) returned no url')
@@ -73,8 +90,7 @@ def upload_cover_material(access_token: str, image_path: Path) -> str:
             files={'media': (image_path.name, handle, mime)},
             timeout=60,
         )
-    resp.raise_for_status()
-    data = ensure_ok(resp.json(), f'upload_cover_material({image_path.name})')
+    data = parse_json_response(resp, f'upload_cover_material({image_path.name})')
     media_id = data.get('media_id')
     if not media_id:
         raise WeChatError(f'upload_cover_material({image_path.name}) returned no media_id')
@@ -142,36 +158,33 @@ def replace_local_images(access_token: str, html: str, html_path: Path) -> tuple
 
 
 def add_draft(access_token: str, article: dict[str, Any]) -> dict[str, Any]:
-    resp = requests.post(
+    return post_json_utf8(
         ADD_DRAFT_URL,
+        {'articles': [article]},
         params={'access_token': access_token},
-        json={'articles': [article]},
         timeout=60,
+        action=f'add_draft({article.get("title")})',
     )
-    resp.raise_for_status()
-    return ensure_ok(resp.json(), f'add_draft({article.get("title")})')
 
 
 def update_draft(access_token: str, media_id: str, article: dict[str, Any], index: int = 0) -> dict[str, Any]:
-    resp = requests.post(
+    return post_json_utf8(
         UPDATE_DRAFT_URL,
+        {'media_id': media_id, 'index': index, 'articles': article},
         params={'access_token': access_token},
-        json={'media_id': media_id, 'index': index, 'articles': article},
         timeout=60,
+        action=f'update_draft({article.get("title")})',
     )
-    resp.raise_for_status()
-    return ensure_ok(resp.json(), f'update_draft({article.get("title")})')
 
 
 def delete_draft(access_token: str, media_id: str) -> dict[str, Any]:
-    resp = requests.post(
+    return post_json_utf8(
         DELETE_DRAFT_URL,
+        {'media_id': media_id},
         params={'access_token': access_token},
-        json={'media_id': media_id},
         timeout=60,
+        action=f'delete_draft({media_id})',
     )
-    resp.raise_for_status()
-    return ensure_ok(resp.json(), f'delete_draft({media_id})')
 
 
 def build_article_payload(item: dict[str, Any], access_token: str, args: argparse.Namespace) -> tuple[dict[str, Any], dict[str, str], str]:
