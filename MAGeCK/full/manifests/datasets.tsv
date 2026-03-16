@@ -1,0 +1,10 @@
+article	track	status	source_type	source_name	accession_or_file	source_url	note
+1	full-count	verified	paper_supplement	Sanson et al. Nat Commun 2018	Supplementary Data 1	https://pmc.ncbi.nlm.nih.gov/articles/PMC7063732/	Brunello/Avana/GeCKOv2 全基因组 growth screen 数据
+1	full-raw	verified	sra	Sanson et al. Nat Commun 2018	SRP172473	https://pmc.ncbi.nlm.nih.gov/articles/PMC7063732/	raw screen sequencing data，适合重跑 mageck count
+2	full-count	verified	paper_supplement	Sanson et al. Nat Commun 2018	Supplementary Data 1 and 3	https://pmc.ncbi.nlm.nih.gov/articles/PMC7063732/	可组合成全量多条件 count matrix 做 MLE/VISPR
+3	full-count	partially_verified	derived_plus_reference	Full MAGeCK outputs + official DepMap release	TBD	NA	先用第1/2篇 full outputs，再单独锁定 DepMap release
+4	full-count	verified	paper_supplement	Sanson et al. Nat Commun 2018	Supplementary Data 7-10	https://pmc.ncbi.nlm.nih.gov/articles/PMC7063732/	hCRISPRi-v2 / hCRISPRa-v2 全量 phenotype/gene-level 数据
+4	full-raw	pending	secondary_source_search	Correct K562 CRISPRi raw source	TBD	NA	当前教程里的 GSE152916 错误，raw 入口需要单独再核对
+5	full-source-data	candidate	paper_source_data	Tsujino et al. Nat Commun 2023	Supplementary Data 2-5 / source data	https://pmc.ncbi.nlm.nih.gov/articles/PMC10635828/	先做真实公开结果版，替代模拟数据
+5	full-raw	pending	secondary_source_search	Drug-gene interaction raw counts / FASTQ	TBD	NA	这轮未锁定足够可靠的一手 accession，不能硬写
+6	full-figures	derived	derived	Rebuilt from articles 1-5 full outputs	Figure_main_full	NA	投稿图和统计汇总全部由 full outputs 重建

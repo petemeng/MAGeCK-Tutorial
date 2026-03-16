@@ -1,0 +1,69 @@
+from pathlib import Path
+import csv
+
+configfile: "../config/paths.yaml"
+
+ROOT = Path(workflow.basedir).parent
+article = config["article1"]
+manifest_path = ROOT / article["manifest"]
+
+rows = []
+with manifest_path.open() as handle:
+    reader = csv.DictReader(handle, delimiter='\t')
+    for row in reader:
+        if row["cohort"] == article["cohort"] and row["selected"] == "yes":
+            rows.append(row)
+
+SAMPLES = [row["sample_label"] for row in rows]
+RUNS = {
+    row["sample_label"]: [value for value in row["run_accessions"].split(';') if value]
+    for row in rows
+}
+TREATMENTS = article["treatment_labels"]
+CONTROL = article["control_label"]
+MERGED_DIR = ROOT / article["merged_dir"]
+COUNT_PREFIX = ROOT / article["count_prefix"]
+TEST_PREFIX = ROOT / article["test_prefix"]
+LIBRARY = ROOT / article["library_annotation"]
+
+rule all:
+    input:
+        str(COUNT_PREFIX) + ".count.txt",
+        str(TEST_PREFIX) + ".gene_summary.txt",
+
+rule merge_fastq:
+    input:
+        lambda wc: expand(str(ROOT / article["runs_dir"] / "{run}.fastq.gz"), run=RUNS[wc.sample])
+    output:
+        str(MERGED_DIR / "{sample}.fastq.gz")
+    shell:
+        "mkdir -p {MERGED_DIR} && cat {input} > {output} && gzip -t {output}"
+
+rule mageck_count:
+    input:
+        library=str(LIBRARY),
+        fastqs=expand(str(MERGED_DIR / "{sample}.fastq.gz"), sample=SAMPLES)
+    output:
+        count=str(COUNT_PREFIX) + ".count.txt",
+        summary=str(COUNT_PREFIX) + ".countsummary.txt",
+    params:
+        sample_labels=','.join(SAMPLES),
+        fastq_arg=' '.join(str(MERGED_DIR / f"{sample}.fastq.gz") for sample in SAMPLES),
+        prefix=str(COUNT_PREFIX),
+    shell:
+        "mkdir -p $(dirname {params.prefix}) && "
+        "mageck count -l {input.library} --fastq {params.fastq_arg} --sample-label {params.sample_labels} -n {params.prefix}"
+
+rule mageck_test:
+    input:
+        count=str(COUNT_PREFIX) + ".count.txt"
+    output:
+        gene_summary=str(TEST_PREFIX) + ".gene_summary.txt",
+        sgrna_summary=str(TEST_PREFIX) + ".sgrna_summary.txt",
+    params:
+        treatment=','.join(TREATMENTS),
+        control=CONTROL,
+        prefix=str(TEST_PREFIX),
+    shell:
+        "mkdir -p $(dirname {params.prefix}) && "
+        "mageck test -k {input.count} -t {params.treatment} -c {params.control} -n {params.prefix} --normcounts-to-file"

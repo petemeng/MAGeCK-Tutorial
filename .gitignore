@@ -21,3 +21,9 @@ MAGeCK/wechat_drafts/__pycache__/
 MAGeCK/repro/tmp/
 
 MAGeCK/wechat_drafts/output/
+
+# Full MAGeCK workflow data
+MAGeCK/full/raw/
+MAGeCK/full/external/
+MAGeCK/full/counts/
+MAGeCK/full/results/

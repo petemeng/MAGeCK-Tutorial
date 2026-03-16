@@ -1,0 +1,16 @@
+article1:
+  cohort: article1_basic_full_raw
+  manifest: manifests/samples_basic.tsv
+  raw_dir: raw/article1_basic_full_raw
+  merged_dir: raw/article1_basic_full_raw/merged
+  runs_dir: raw/article1_basic_full_raw/runs
+  count_prefix: counts/article1_basic_full_raw/mageck_count
+  test_prefix: results/article1_basic_full_raw/mageck_test
+  library_annotation: external/brunello/library.tsv
+  control_label: BrunelloMod_pDNA
+  treatment_labels:
+    - BrunelloMod_A375_repA
+    - BrunelloMod_A375_repB
+    - BrunelloMod_A375_repC
+notes:
+  library_annotation_source: "Provide the full Brunello library annotation before running mageck count. Do not reuse the toy library from MAGeCK/repro/data/basic/library.txt."

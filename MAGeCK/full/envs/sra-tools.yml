@@ -1,0 +1,9 @@
+name: sra-tools-full
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - sra-tools
+  - pigz
+  - curl
