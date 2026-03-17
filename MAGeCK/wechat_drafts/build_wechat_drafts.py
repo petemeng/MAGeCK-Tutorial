@@ -27,18 +27,18 @@ ARTICLE_CONFIG: list[dict[str, Any]] = [
         'source': ROOT / 'MAGeCK' / '2.md',
         'slug': '02-mageck-mle-vispr',
         'series': 'CRISPR 筛选最佳实践（二）',
-        'cover_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_nine_quadrant.png',
-        'hero_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_mle_vs_rra.png',
-        'digest': '讲透 MAGeCK MLE 的设计矩阵、多条件建模与 beta score 解释，并把当前版本可运行的 mageck-vispr 工作流一起整理清楚。',
+        'cover_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article2_pub_mle_vs_rra_full.png',
+        'hero_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article2_pub_mle_vs_rra_full.png',
+        'digest': '基于同一套 SRP172473 全量 raw cohort，实跑 MAGeCK MLE、比较 RRA 与 beta score，并验证 mageck-vispr scaffold 初始化流程。',
         'author': 'Songlab',
     },
     {
         'source': ROOT / 'MAGeCK' / '3.md',
         'slug': '03-mageckflute-integrative',
         'series': 'CRISPR 筛选最佳实践（三）',
-        'cover_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_flute_squareview.png',
-        'hero_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_depmap_heatmap.png',
-        'digest': '把 MAGeCK 结果接入 MAGeCKFlute，补上通路富集、拷贝数偏差检查和 DepMap 参考背景，做成更完整的整合分析。',
+        'cover_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article3_pub_flute_squareview_full.png',
+        'hero_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article3_pub_flute_rankview_full.png',
+        'digest': '基于 full raw 的 RRA 与 MLE 结果，实跑 MAGeCKFlute 的 ReadRRA / ReadBeta / RankView / SquareView，并接上 GO 与 DepMap 交叉验证。',
         'author': 'Songlab',
     },
     {
@@ -65,7 +65,7 @@ ARTICLE_CONFIG: list[dict[str, Any]] = [
         'series': 'CRISPR 筛选最佳实践（六）',
         'cover_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'Figure_main.png',
         'hero_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'Figure_main.png',
-        'digest': '把前 5 篇的核心结果重排成投稿级图表，同时整理 CRISPR screening 论文最常见的审稿问题与回答框架。',
+        'digest': '把当前 1–5 篇的真实结果重组为 6-panel 主图与系列统计表，并同步整理最常见的审稿问题。',
         'author': 'Songlab',
     },
 ]
@@ -158,21 +158,6 @@ def append_markdown_fragment(parent: Tag, text: str) -> None:
     for child in children:
         parent.append(child)
 
-
-
-def build_title_card(soup: BeautifulSoup, title: str) -> Tag:
-    section = soup.new_tag('section')
-    section['style'] = TITLE_CARD_STYLE
-
-    bar = soup.new_tag('section')
-    bar['style'] = TITLE_BAR_STYLE
-    section.append(bar)
-
-    h1 = soup.new_tag('h1')
-    h1.string = title
-    h1['style'] = 'margin:0;color:#203124;font-size:28px;line-height:1.45;'
-    section.append(h1)
-    return section
 
 
 
@@ -331,7 +316,6 @@ def beautify_html(
     root = outer.new_tag('section')
     root['style'] = ROOT_WRAP_STYLE
 
-    root.append(build_title_card(outer, display_title))
     display_blocks = [
         block for block in quote_blocks
         if not any(key in ' '.join(block) for key in ['实跑修订', '可执行版代码', '真实结果目录', '一键复现'])

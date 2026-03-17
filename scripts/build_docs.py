@@ -18,46 +18,32 @@ PAGES = [
     ('6.md', '06-publication-figures.md', '6. 投稿图表与审稿问答'),
 ]
 
-FIGURES = [
-    'Figure_main.png',
-    'pub_beta_distribution.png',
-    'pub_cn_bias.png',
-    'pub_crispra_dist.png',
-    'pub_crispri_vs_ko.png',
-    'pub_depmap_heatmap.png',
-    'pub_diff_beta.png',
-    'pub_dose_response.png',
-    'pub_flute_kegg.png',
-    'pub_flute_rankview.png',
-    'pub_flute_squareview.png',
-    'pub_gene_volcano.png',
-    'pub_go_enrichment.png',
-    'pub_mle_vs_rra.png',
-    'pub_nine_quadrant.png',
-    'pub_sgrna_barplot.png',
-    'pub_sgrna_rank.png',
-    'pub_sl_kegg.png',
-    'pub_tss_distance.png',
-    'pub_waterfall.png',
+FIGURE_DIRS = [
+    MAG / 'repro' / 'results' / 'figures',
+    MAG / 'full' / 'reports' / 'figures',
 ]
 
 
 def transform_markdown(text: str) -> str:
     text = text.replace('(repro/results/figures/', '(assets/figures/')
+    text = text.replace('(full/reports/figures/', '(assets/figures/')
     text = text.replace('`MAGeCK/repro/', '`repro/')
+    text = text.replace('`MAGeCK/full/', '`full/')
     text = text.replace('`MAGeCK/', '`')
     text = text.replace('MAGeCK/repro/results/', 'repro/results/')
+    text = text.replace('MAGeCK/full/reports/', 'full/reports/')
+    text = text.replace('MAGeCK/full/', 'full/')
     # remove huge manual truncation artifacts if present
     text = text.replace('…10689 chars truncated…', '')
     return text
 
-
 def main() -> None:
     FIG_DST.mkdir(parents=True, exist_ok=True)
-    for fig in FIGURES:
-        src = MAG / 'repro' / 'results' / 'figures' / fig
-        if src.exists():
-            shutil.copy2(src, FIG_DST / fig)
+    for figure_dir in FIGURE_DIRS:
+        if not figure_dir.exists():
+            continue
+        for src in figure_dir.glob('*.png'):
+            shutil.copy2(src, FIG_DST / src.name)
 
     for src_name, dst_name, nav_title in PAGES:
         text = (MAG / src_name).read_text()

@@ -5,723 +5,306 @@ title: 5. 药物互作与合成致死
 # CRISPR 筛选最佳实践（五）：药物-基因互作筛选与合成致死分析——一加一大于二
 
 > 📋 教程信息
-> - GitHub：[petemeng/MAGeCK-Tutorial](https://github.com/petemeng/MAGeCK-Tutorial)（完整代码、结果与网页）
-> - 数据来源：模拟数据（基于 Olivieri et al., 2020 *Cell* 的 olaparib resistance screen 设计）
-> - 预计阅读：45 分钟 | 实操：35 分钟
+> - GitHub 仓库：[petemeng/MAGeCK-Tutorial](https://github.com/petemeng/MAGeCK-Tutorial)（完整代码、结果与更新记录）
+> - 在线网页：[petemeng.github.io/MAGeCK-Tutorial](https://petemeng.github.io/MAGeCK-Tutorial/)（可点击阅读的网页版教程）
+> - 数据来源：仓库内可复现教学 MLE 矩阵与实跑结果：`repro/results/drug_mle*`
+> - 分析对象：drug-gene interaction、synthetic lethal、resistance 与 dose response
+> - 本篇重点：`analysis/05_drug_interaction.R` 的实跑输出与图表解释
+> - 预计阅读：40 分钟 | 实操：10–20 分钟
 > - 难度：⭐⭐⭐⭐⭐（5 星制）
-> - 前置知识：完成本系列第 1-2 篇（MAGeCK test + MLE）
-
+> - 前置知识：完成第 2 篇，理解 design matrix 与 `beta` 的含义
 
 ---
 
 ## 本篇目标
 
-前四篇我们一直在做"单因素筛选"——在一个条件下，哪些基因 essential / enriched。但精准肿瘤学最核心的问题是一个**双因素问题**：
+前面的篇目大多还是“单条件问题”：
 
-> 药物 X 已经在用了，但有些患者耐药了。哪些基因的缺失能让耐药细胞重新对药物敏感？
+- 哪些基因在筛选中 dropout？
+- 哪些基因更像 essential？
 
-这就是**药物-基因互作筛选（drug-gene interaction screen）**。它的实验设计是：文库感染后，一半细胞在药物处理下培养（drug arm），一半在 DMSO 下培养（vehicle arm），然后比较两组的 sgRNA 计数差异。
+但药物筛选真正关心的是一个双因素问题：
 
-**关键洞察：我们找的不是"在 drug arm 中 dropout 的基因"——那些可能只是正常的 essential genes。我们找的是"在 drug arm 中 dropout 但在 vehicle arm 中没有 dropout 的基因"——这种交互效应（interaction）才是药物特异的合成致死靶点。**
+> 某个基因本身也许不是通用 essential，可它会不会在药物存在时，变成让细胞特别脆弱的“合成致死”靶点？
 
-这在统计上就是一个**互作项（interaction term）**——和 RNA-seq 的差异表达分析中检验"处理 × 基因型"互作是同一个数学概念。
+这就不是简单的 `Drug vs T0`，也不是简单的 `Drug vs DMSO`。你真正要看的，是 **interaction effect**。
 
-读完这一篇，你会：
+本篇直接基于仓库里已经实跑通过的 `drug_mle` 结果，回答四件事：
 
-1. 理解合成致死（synthetic lethality）的概念和临床意义
-2. 设计药物-基因互作筛选的 MAGeCK MLE design matrix
-3. 区分三种不同的基因类别：drug-specific、common essential、resistance
-4. 用互作项而不是简单差异来识别合成致死靶点
-5. 可视化药物互作的 waterfall plot 和 differential beta 图
-6. 知道假阳性的主要来源和控制策略
-
----
-
-## 合成致死：精准肿瘤学的核心策略
-
-### 概念
-
-合成致死（synthetic lethality）是指：**两个基因单独失活都不致死，但同时失活则导致细胞死亡。** 推广到药物场景就是：药物 X 抑制蛋白 A，基因 B 的敲除本身不影响细胞存活——但当 A 被药物抑制的同时 B 也被敲除，细胞就死了。
-
-**最成功的临床案例：PARP 抑制剂（olaparib）和 BRCA 突变。** PARP 酶修复单链 DNA 断裂。正常细胞中，如果 PARP 被抑制，未修复的单链断裂在 DNA 复制时转变为双链断裂——但同源重组（HR）修复通路（由 BRCA1/2 驱动）可以修复这些双链断裂，细胞存活。然而在 BRCA 突变的癌细胞中，HR 通路已经坏了——现在 PARP 也被抑制了——两条修复通路都不工作了——双链断裂无法修复——细胞死亡。
-
-**CRISPR 药物互作筛选的目标就是系统性地发现这类关系：** 在药物 X 处理的背景下，敲除哪些基因会让细胞特异性地死亡？
-
-### 实验设计
-
-```
-T0（基线）
-  ├── Vehicle arm（DMSO）→ T14_DMSO
-  └── Drug arm（olaparib）→ T14_Drug
-
-比较 1: T14_DMSO vs T0 → 正常 essential genes
-比较 2: T14_Drug vs T0 → Drug + essential genes
-比较 3: T14_Drug vs T14_DMSO → Drug-specific 效应
-         （= 合成致死候选 + 抵抗候选）
-```
-
-**比较 3 是核心——它捕捉的是"药物特异的"效应，扣除了正常 essential genes 的背景。**
+1. synthetic lethal / resistance / common essential 怎么分
+2. `drug|beta` 图应该怎么看
+3. top hits 是否符合 DNA repair / PARP biology 的常识
+4. 剂量升高后，interaction beta 会不会同步增强
 
 ---
 
-## 环境与数据准备
+## 本篇使用的真实入口
+
+分析脚本：`repro/analysis/05_drug_interaction.R`
+
+直接运行：
 
 ```bash
-# ============================================================
-# 本篇使用模拟数据
-# 模拟 olaparib resistance screen 的 count table
-# 4 个条件 × 2 个重复 = 8 个样本
-# ============================================================
-
-conda activate mageck_env
-ls data/drug_screen/
+cd MAGeCK/repro
+Rscript analysis/05_drug_interaction.R
 ```
 
 ```
 📊 输出：
-count_table.txt
-design_matrix.txt
-design_matrix_dose.txt
-library.tsv
+Drug MLE genes: 509
+
+Class counts:
+Common essential 12
+NS 452
+Resistance 13
+Synthetic lethal 32
+
+Synthetic lethal gene mapping: 31 / 32
+Significant GO BP terms: 625
 ```
 
-```r
-# ============================================================
-# 文件：analysis/05_drug_interaction.R
-# 功能：药物-基因互作分析
-# ============================================================
+这几行已经足够说明这套教学结果是“有结构的”：
 
-library(ggplot2)
-library(dplyr)
-library(readr)
-library(ggrepel)
-
-# 读取模拟 count table
-counts <- read_tsv("data/drug_screen/count_table.txt")
-cat("数据概况：\n")
-cat("  sgRNA:", nrow(counts), "\n")
-cat("  样本:", ncol(counts) - 2, "\n")
-cat("  列名:", paste(colnames(counts), collapse=", "), "\n")
-```
-
-```
-📊 输出：
-数据概况：
-  sgRNA: 2036
-  样本: 8
-  列名: sgRNA, Gene, T0_rep1, T0_rep2, DMSO_rep1, DMSO_rep2, Drug_rep1, Drug_rep2, DrugHi_rep1, DrugHi_rep2
-```
-
-8 个样本：2 个 T0 + 2 个 DMSO + 2 个低剂量药物 + 2 个高剂量药物。这让我们还能看到剂量效应。
+- 509 个基因被纳入 MLE 交互分析
+- 其中分出 **32 个 synthetic lethal**、**13 个 resistance**、**12 个 common essential**
+- 合成致死基因大多数可以成功映射到功能注释并做 GO 富集
 
 ---
 
-## Step 1：三种分析策略的比较
-
-找药物互作基因有三种策略，**只有一种是正确的**。
-
-### 策略 A（错误）：只比较 Drug vs T0
+## Step 1：interaction MLE 结果长什么样
 
 ```bash
-# ❌ 错误策略：直接拿 Drug arm 和 T0 比
-mageck test \
-    -k data/drug_screen/count_table.txt \
-    -t Drug_rep1,Drug_rep2 \
-    -c T0_rep1,T0_rep2 \
-    -n results/drug_naive_test
-```
-
-**为什么这是错的？** 因为 Drug arm 中 dropout 的基因 = essential genes + drug-specific 靶点。你无法区分"这个基因在任何条件下都 essential"和"这个基因只在药物存在时才 essential"。
-
-### 策略 B（有缺陷）：比较 Drug vs DMSO
-
-```bash
-# ⚠️ 有缺陷：Drug arm 和 DMSO arm 直接比
-mageck test \
-    -k data/drug_screen/count_table.txt \
-    -t Drug_rep1,Drug_rep2 \
-    -c DMSO_rep1,DMSO_rep2 \
-    -n results/drug_vs_dmso_test
-```
-
-**这比策略 A 好很多**——它确实能捕捉到"Drug 和 DMSO 之间的差异"。但它有一个微妙的问题：DMSO arm 中已经有一些 essential genes dropout 了，如果某个基因在 DMSO 中 dropout 了 50%、在 Drug 中 dropout 了 90%，策略 B 只能看到"40% 的差异"——信号被削弱了。
-
-### 策略 C（正确）：MLE 互作项
-
-```bash
-# ============================================================
-# ✅ 正确策略：MLE 互作模型
-# Design matrix 包含 treatment 和 drug 两个因子
-# drug 列的 beta = 药物特异效应 = 合成致死信号
-# ============================================================
-
-cat > data/drug_screen/design_matrix.txt << 'EOF'
-Samples	baseline	time	drug
-T0_rep1	1	0	0
-T0_rep2	1	0	0
-DMSO_rep1	1	1	0
-DMSO_rep2	1	1	0
-Drug_rep1	1	1	1
-Drug_rep2	1	1	1
-EOF
-
-cat data/drug_screen/design_matrix.txt | column -t
+head -5 repro/results/drug_mle.gene_summary.txt | sed 's/\t/    /g'
 ```
 
 ```
 📊 输出：
-Samples    baseline  time  drug
-T0_rep1    1         0     0
-T0_rep2    1         0     0
-DMSO_rep1  1         1     0
-DMSO_rep2  1         1     0
-Drug_rep1  1         1     1
-Drug_rep2  1         1     1
+Gene    sgRNA    time|beta    time|z    time|p-value    time|fdr    drug|beta    drug|z    drug|p-value    drug|fdr
+AAAS    4    0.19113    1.1809    0.1277    0.75581    -0.27164    -1.6561    0.14538    0.86667
+AAK1    4   -0.07659   -0.52105   0.57171    0.99607    -0.11693    -0.78578   0.54617    0.99803
+AATF    4    0.12261    0.76877   0.35560    0.95378     0.27014     1.6725    0.12967    0.86667
+AATK    4    0.06987    0.57618   0.61690    0.99607     0.02014     0.16401   0.92534    0.99803
 ```
 
-**设计矩阵的逻辑：**
+这里最关键的不是 `time|beta`，而是 `drug|beta`：
 
-- `time` 列：编码"培养 14 天"的效应（T0=0，所有 T14=1）。`time|beta` 捕捉的是 DMSO arm 中的正常 essential gene dropout。
-- `drug` 列：编码"药物处理"的**额外**效应（只有 Drug arm =1）。`drug|beta` 捕捉的是**在控制了正常 dropout 之后，药物引起的额外变化**——这就是互作项。
+- `drug|beta < 0`：在药物存在时更容易 dropout，偏向 synthetic lethal
+- `drug|beta > 0`：在药物存在时更占优势，偏向 resistance
 
-**`drug|beta < 0` = 合成致死候选（药物 + 基因敲除 = 更多 dropout）**
-**`drug|beta > 0` = 抵抗候选（基因敲除让细胞对药物不那么敏感）**
-
-```bash
-# 运行 MLE
-mageck mle \
-    -k data/drug_screen/count_table.txt \
-    -d data/drug_screen/design_matrix.txt \
-    -n results/drug_mle \
-    --norm-method median \
-    --permutation-round 100
-```
-
-```
-📊 输出：
-INFO  Welcome to MAGeCK v0.5.9.5. Command: mle
-INFO  Beta labels: baseline,time,drug
-INFO  Included samples: T0_rep1,T0_rep2,DMSO_rep1,DMSO_rep2,Drug_rep1,Drug_rep2
-INFO  Loaded 509 genes.
-INFO  Gene summary written to results/drug_mle.gene_summary.txt
-```
-
-⚠️ **踩坑预警：为什么不能直接 Drug vs DMSO 而需要互作模型**
-
-> 考虑一个具体场景：基因 X 在 DMSO arm 中 dropout 30%（弱 essential），在 Drug arm 中 dropout 70%（强 dropout）。
->
-> **策略 B（Drug vs DMSO）** 看到的是 70% - 30% = 40% 的差异。但这 40% 可能**不显著**——因为基数（30%）的变异就很大。
->
-> **策略 C（MLE 互作项）** 先用 `time` 因子建模 30% 的背景 dropout，然后 `drug` 因子估计的是在"扣除背景 dropout 之后"药物导致的额外 40%。因为模型利用了所有样本（包括 T0）来估计背景，统计效力更高。
->
-> **经验上 MLE 互作模型能比策略 B 多检出 20-30% 的药物互作基因。**
+这就是为什么 interaction 分析必须用 MLE，而不能只看普通两组差异。
 
 ---
 
-## Step 2：解读互作结果
+## Step 2：先看分类结果
 
-```r
-# ============================================================
-# 读取 MLE 结果，提取药物互作项
-# ============================================================
+脚本把每个基因按规则分成四类：
 
-mle_res <- read_tsv("results/drug_mle.gene_summary.txt")
+- `Synthetic lethal`
+- `Resistance`
+- `Common essential`
+- `NS`
 
-# 提取三类基因
-gene_classes <- mle_res %>%
-    mutate(
-        class = case_when(
-            `drug|fdr` < 0.05 & `drug|beta` < -0.5
-                ~ "Synthetic lethal",
-            `drug|fdr` < 0.05 & `drug|beta` > 0.5
-                ~ "Resistance",
-            `time|fdr` < 0.05 & `time|beta` < -0.5
-                ~ "Common essential",
-            TRUE ~ "NS"
-        )
-    )
+分类规则本身非常实用：
 
-cat("=== 基因分类 ===\n")
-print(table(gene_classes$class))
-```
+- `drug|fdr < 0.05` 且 `drug|beta < -0.5` → `Synthetic lethal`
+- `drug|fdr < 0.05` 且 `drug|beta > 0.5` → `Resistance`
+- `time|beta < -0.5` → `Common essential`
+- 其余 → `NS`
 
-```
-📊 输出：
-=== 基因分类 ===
-Common essential   12
-NS                453
-Resistance         13
-Synthetic lethal   32
-```
-
-**32 个合成致死候选基因，13 个抵抗候选基因。** 对于一套教学规模的互作数据，这样的 hit 数既便于解释，也足以展示经典 PARP 抑制剂相关通路。
-
-```r
-# ============================================================
-# Top 合成致死和抵抗基因
-# ============================================================
-
-cat("=== Top 15 合成致死候选 ===\n")
-gene_classes %>%
-    filter(class == "Synthetic lethal") %>%
-    arrange(`drug|fdr`) %>%
-    select(Gene, `drug|beta`, `drug|fdr`,
-           `time|beta`) %>%
-    head(15) %>% print()
-
-cat("\n=== Top 15 抵抗候选 ===\n")
-gene_classes %>%
-    filter(class == "Resistance") %>%
-    arrange(`drug|fdr`) %>%
-    select(Gene, `drug|beta`, `drug|fdr`,
-           `time|beta`) %>%
-    head(15) %>% print()
-```
-
-```
-📊 输出：
-=== Top synthetic lethal ===
-Gene    drug|beta  drug|fdr  time|beta
-XRCC3   -1.5523    0         -0.0372
-FANCC   -1.4620    0          0.0624
-FANCD2  -1.4372    0         -0.0452
-BRCA2   -1.3783    0         -0.0430
-RAD51   -1.3625    0          0.0451
-FANCB   -1.3418    0          0.0158
-RAD51D  -1.2814    0          0.0439
-FANCA   -1.2686    0         -0.1522
-
-=== Top resistance ===
-RNF8    1.2447     0          0.2409
-SHLD1   1.2117     0          0.0419
-PARP1   1.2012     0          0.2422
-MAD2L2  1.1848     0         -0.2478
-DYNLL1  1.1751     0          0.0750
-FAM35A  1.0448     0          0.1680
-```
-
-**合成致死 Top 基因完美重现了 DNA 修复领域的核心知识。**
-
-*BRCA1*、*BRCA2*、*PALB2*、*RAD51C/D* 是同源重组（HR）修复通路的核心组分。PARP 抑制剂的合成致死机制就是通过抑制 PARP 使得 HR 修复成为唯一的后路——然后 HR 通路基因被 CRISPR 敲除——后路也断了——细胞死亡。
-
-**注意 `time|beta` 列**——这些基因的 `time|beta` 接近 0（-0.03 到 -0.16），说明它们在没有药物的情况下**不是 essential genes**。只有在药物存在时它们才变成 essential——这就是"互作"的含义。
-
-**抵抗候选同样精彩。** *PARP1/2* 是 olaparib 的直接靶点——敲除 PARP 等于药物没有靶标了，自然抵抗。*TP53BP1*（53BP1）、*RIF1*、*SHLD1/2*、*REV7*（MAD2L2）是近年来发现的"HR 修复恢复因子"——敲除它们可以部分恢复 BRCA 缺陷细胞的 HR 能力，从而抵抗 PARP 抑制剂。这些发现直接来自 CRISPR 筛选。
-
-💡 **经验之谈：`time|beta` 是区分合成致死和 common essential 的关键**
-
-> 合成致死基因的特征是：`drug|beta` 显著为负，但 `time|beta` 接近 0。
->
-> 如果一个基因的 `time|beta` 也很负（比如 -2），说明它在没有药物时就已经是 essential gene 了——药物只是"雪上加霜"。这种基因通常不是好的治疗靶点，因为正常细胞也需要它。
->
-> **最理想的合成致死靶点：`drug|beta` << 0 且 `time|beta` ≈ 0。**
+这和真实项目里常做的第一轮优先级划分非常接近。
 
 ---
 
-## Step 3：可视化药物互作
+## Step 3：合成致死和耐药 top hits 是否像真的
 
-### Differential Beta Plot
+脚本打印出的 top hits 非常值得看，因为它们不是“算法上显著但毫无生物学关系”的杂乱基因。
 
-```r
-# Differential beta plot 数据准备
+### Top synthetic lethal
 
-highlight_genes <- c("BRCA1", "BRCA2", "PALB2",
-    "PARP1", "TP53BP1", "ATM", "RAD51C",
-    "RPS19", "RPL11", "PCNA")
-
-plot_df <- gene_classes %>%
-    filter(class != "NS") %>%
-    mutate(label = ifelse(Gene %in% highlight_genes,
-        Gene, NA))
+```
+📊 输出：
+XRCC3   -1.55
+FANCC   -1.46
+FANCD2  -1.44
+BRCA2   -1.38
+RAD51   -1.36
+FANCB   -1.34
+RAD51D  -1.28
+FANCA   -1.27
+RAD51B  -1.26
+RBBP8   -1.25
 ```
 
-数据准备好了。横轴放 `time|beta`（正常 dropout），纵轴放 `drug|beta`（药物特异效应），就能看到四个象限的基因分布：
+### Top resistance
 
-```r
-# Differential beta plot
-p_diff <- ggplot(gene_classes,
-    aes(x = `time|beta`, y = `drug|beta`)) +
-    geom_point(aes(color = class), size = 0.5, alpha = 0.4) +
-    geom_point(data = plot_df,
-        aes(color = class), size = 2) +
-    geom_text_repel(data = plot_df,
-        aes(label = label), size = 3,
-        fontface = "italic", max.overlaps = 20) +
-    scale_color_manual(values = c(
-        "Synthetic lethal" = "#E64B35",
-        "Resistance" = "#3C5488",
-        "Common essential" = "#F39B7F",
-        "NS" = "grey85")) +
-    geom_hline(yintercept = 0, color = "grey30") +
-    geom_vline(xintercept = 0, color = "grey30") +
-    labs(x = "time|beta (normal dropout)",
-         y = "drug|beta (drug-specific)",
-         color = NULL) +
-    theme_minimal(base_size = 12) +
-    theme(panel.grid = element_blank(),
-          axis.line = element_line(color = "grey20"))
-
-ggsave("results/figures/pub_diff_beta.png",
-       p_diff, width = 9, height = 8, dpi = 300)
+```
+📊 输出：
+RNF8     1.24
+SHLD1    1.21
+PARP1    1.20
+MAD2L2   1.18
+DYNLL1   1.18
+FAM35A   1.04
+REV7     1.04
+RIF1     1.03
+SHLD2    0.991
+TP53BP1  0.950
 ```
 
-<!-- 图 1 位置：Differential beta plot -->
+如果你对 DNA damage repair / PARP biology 熟一点，会立刻发现：
+
+- synthetic lethal 侧聚了很多 **HR / Fanconi anemia / RAD51** 相关基因
+- resistance 侧则出现了 **TP53BP1 / REV7 / SHLD / RIF1** 这类和修复路径切换高度相关的因子
+
+这正说明这份教学结果虽然规模不大，但方向是“像真的”。
+
+---
+
+## Step 4：Differential beta plot 是药物互作里最关键的一张图
+
+### 图 1：Differential beta plot
 
 ![图 1：Differential beta](assets/figures/pub_diff_beta.png)
 
-**图 1：药物互作的 Differential Beta Plot。** 横轴为正常培养的 dropout（`time|beta`），纵轴为药物特异效应（`drug|beta`）。**左下角**是 common essential（正常就 dropout，药物进一步加剧），**左侧中部**的红色点是合成致死候选（`time|beta` ≈ 0 但 `drug|beta` << 0），**上方**蓝色点是抵抗候选。*BRCA1/2* 精确地落在合成致死象限——在 DMSO 中几乎不 dropout，在 olaparib 中强烈 dropout。*RPS19* 落在 common essential 象限——有没有药物它都 dropout。
+横轴是 `time|beta`，纵轴是 `drug|beta`。这张图的读法非常关键：
 
-### Waterfall Plot
+- 左下：本身也在掉，在药物里掉得更厉害 → 可能接近 synthetic lethal / strong dependency
+- 右上：药物下更占优势 → resistance 候选
+- 只有 `time|beta` 很负、`drug|beta` 接近 0 → common essential，而不是 drug-specific hit
 
-```r
-# ============================================================
-# Waterfall plot：drug|beta 排名图
-# 从最负（合成致死）到最正（抵抗）
-# ============================================================
+这也是为什么 interaction 模型比简单差异更有信息量：
 
-waterfall_df <- mle_res %>%
-    arrange(`drug|beta`) %>%
-    mutate(rank = 1:n(),
-        class = case_when(
-            `drug|fdr` < 0.05 & `drug|beta` < -0.5
-                ~ "Synthetic lethal",
-            `drug|fdr` < 0.05 & `drug|beta` > 0.5
-                ~ "Resistance",
-            TRUE ~ "NS"),
-        label = ifelse(Gene %in% c("BRCA1", "BRCA2",
-            "PALB2", "PARP1", "TP53BP1", "ATM"),
-            Gene, NA))
-```
+> 它把“本来就 essential”与“药物特异性脆弱”拆开了。
 
-```r
-# Waterfall plot 绘制
+---
 
-p_water <- ggplot(waterfall_df,
-    aes(x = rank, y = `drug|beta`, color = class)) +
-    geom_point(size = 0.3, alpha = 0.5) +
-    geom_text_repel(aes(label = label), size = 3,
-        fontface = "italic", color = "grey20",
-        max.overlaps = 15) +
-    scale_color_manual(values = c(
-        "Synthetic lethal" = "#E64B35",
-        "Resistance" = "#3C5488", "NS" = "grey80")) +
-    geom_hline(yintercept = 0, color = "grey30") +
-    labs(x = "Gene Rank", y = "drug|beta",
-         color = NULL) +
-    theme_minimal(base_size = 12) +
-    theme(panel.grid = element_blank(),
-          axis.line = element_line(color = "grey20"),
-          legend.position = c(0.85, 0.15))
+## Step 5：Waterfall plot 最适合做 top hit 浏览
 
-ggsave("results/figures/pub_waterfall.png",
-       p_water, width = 10, height = 6, dpi = 300)
-```
-
-<!-- 图 2 位置：Waterfall plot -->
+### 图 2：Waterfall plot
 
 ![图 2：Waterfall](assets/figures/pub_waterfall.png)
 
-**图 2：药物互作的 Waterfall Plot。** 每个点是一个基因，按 `drug|beta` 排列。左端红色为合成致死候选（*BRCA2*、*BRCA1*、*PALB2*...），右端蓝色为抵抗候选（*PARP1*、*TP53BP1*...）。中间大部分灰色基因的 `drug|beta` ≈ 0——药物对它们没有特异效应。
+waterfall 把所有基因按 `drug|beta` 从最负排到最正：
+
+- 最左端：最强 synthetic lethal
+- 最右端：最强 resistance
+
+这种图非常适合：
+
+- 给老板 / 合作者快速看 top list
+- 选验证对象
+- 看某些经典基因有没有出现在你预期的位置
+
+在这套结果里，`BRCA2`、`RAD51`、`FANCD2` 这些 repair genes 都落在左端，非常合理。
 
 ---
 
-## Step 4：通路富集——合成致死的功能画像
+## Step 6：合成致死不是 gene list，还是 pathway story
 
-```r
-# ============================================================
-# 合成致死基因的通路富集
-# ============================================================
+脚本把全部 synthetic lethal genes 做了 GO BP enrichment：
 
-library(clusterProfiler)
-library(org.Hs.eg.db)
+- `31 / 32` 个成功映射
+- `625` 个显著 GO BP terms
 
-sl_genes <- gene_classes %>%
-    filter(class == "Synthetic lethal") %>%
-    pull(Gene)
-
-sl_ids <- bitr(sl_genes, fromType = "SYMBOL",
-    toType = "ENTREZID", OrgDb = org.Hs.eg.db)
-cat("合成致死基因映射:", nrow(sl_ids), "/",
-    length(sl_genes), "\n")
-
-kegg_sl <- enrichKEGG(gene = sl_ids$ENTREZID,
-    organism = "hsa", pvalueCutoff = 0.05)
-
-cat("\n显著 KEGG 通路:\n")
-head(kegg_sl@result[, c("Description",
-    "GeneRatio", "p.adjust")], 8)
-```
-
-```
-📊 输出：
-合成致死基因映射: 30 / 31
-
-实跑版 GO BP 富集 Top 8：
-double-strand break repair                             22/30  1.86e-30
-DNA recombination                                      21/30  8.94e-28
-double-strand break repair via homologous recombination 17/30 8.94e-25
-recombinational repair                                 17/30  1.17e-24
-cell cycle checkpoint signaling                        17/30  2.07e-24
-interstrand cross-link repair                          12/30  2.11e-23
-homologous recombination                               13/30  4.76e-23
-negative regulation of cell cycle phase transition     17/30  5.42e-22
-```
-
-**Top 通路全部是 DNA 修复相关——Homologous recombination 以压倒性的显著性排名第一。** 这完美验证了 PARP 抑制剂的合成致死机制：PARP 抑制导致的 DNA 损伤需要 HR 修复，HR 通路被 CRISPR 敲除 → 合成致死。
-
-Fanconi anemia 通路排名第二——FA 通路与 HR 修复高度交叉，很多 FA 基因（如 *PALB2*，即 FANCN）同时参与两个通路。
-
-```r
-# 通路富集可视化
-p_kegg_sl <- dotplot(kegg_sl, showCategory = 10) +
-    labs(title = "合成致死基因 — KEGG 通路富集") +
-    theme_minimal(base_size = 10)
-
-ggsave("results/figures/pub_sl_kegg.png",
-       p_kegg_sl, width = 8, height = 6, dpi = 300)
-```
-
-<!-- 图 3 位置：合成致死通路富集 -->
+### 图 3：Synthetic lethal GO 富集
 
 ![图 3：合成致死富集](assets/figures/pub_sl_kegg.png)
 
-**图 3：合成致死基因的 KEGG 通路富集。** DNA 修复相关通路（同源重组、FA 通路、碱基切除修复等）占据了前 7 名。这种"通路一致性"极大增强了结果的可信度。
+这一步的重要性在于：
 
-⚠️ **踩坑预警：合成致死筛选的假阳性来源**
+- 如果 top hits 东一榔头西一棒子，GO 往往也会很散
+- 如果 GO 能收束成 DNA repair / replication stress / checkpoint 相关过程，说明你的互作结果更像一个真实机制网络
 
-> 药物互作筛选的假阳性比普通 dropout screen 更多。三个主要来源：
->
-> 1. **药物毒性引起的非特异 dropout。** 如果药物浓度太高，所有细胞都受损——sgRNA 计数的噪声增大，假阳性率上升。建议用 IC20-IC30（而非 IC50）浓度。
-> 2. **药物改变细胞增殖速度。** 药物处理后细胞增殖变慢——这和筛选时间互作，可能把一些弱 essential genes 推过显著性阈值。
-> 3. **批次效应。** Drug arm 和 DMSO arm 如果不在同一个 plate 上培养，培养条件的微小差异会产生系统性偏差。MLE 的 design matrix 中加 `batch` 列可以缓解。
+也就是说，**通路层面的自洽性，是 synthetic lethal screen 可信度的重要加分项。**
 
 ---
 
-## Step 5：剂量效应分析
+## Step 7：剂量效应让 interaction 更有说服力
 
-如果你有多个药物浓度（如低剂量 + 高剂量），可以检验合成致死效应是否有**剂量依赖性**——这是审稿人最喜欢看到的验证。
+脚本还额外读了：
 
-```r
-# ============================================================
-# 剂量效应 design matrix
-# 用 Drug 和 DrugHi 两个浓度
-# ============================================================
+- `results/drug_mle_dose.gene_summary.txt`
 
-# 读取高剂量 MLE 结果（假设已运行）
-# drug_lo|beta 和 drug_hi|beta
+并比较 `drug_lo|beta` 与 `drug_hi|beta`。
 
-# 模拟：高剂量效应 = 低剂量效应 × 1.5 + 噪声
-set.seed(42)
-dose_df <- mle_res %>%
-    select(Gene, lo_beta = `drug|beta`) %>%
-    mutate(hi_beta = lo_beta * 1.5 + rnorm(n(), 0, 0.3))
-
-# Top 合成致死基因的剂量效应
-top_sl <- gene_classes %>%
-    filter(class == "Synthetic lethal") %>%
-    arrange(`drug|fdr`) %>% head(10) %>% pull(Gene)
-
-dose_top <- dose_df %>%
-    filter(Gene %in% top_sl) %>%
-    arrange(lo_beta)
-
-cat("=== 剂量效应（合成致死 Top 10）===\n")
-print(dose_top)
-```
-
-```
-📊 输出：
-=== 剂量效应（合成致死 Top 10）===
-Gene    lo_beta  hi_beta
-XRCC3   -1.5509  -2.3755
-FANCC   -1.4606  -1.8352
-FANCD2  -1.4365  -2.2080
-BRCA2   -1.3786  -2.0808
-RAD51   -1.3628  -2.1424
-FANCB   -1.3442  -2.2948
-RAD51D  -1.2806  -1.7023
-FANCA   -1.2724  -1.6532
-RAD51B  -1.2543  -2.0076
-RBBP8   -1.2529  -1.8751
-```
-
-**所有 top 合成致死基因在高剂量下都展示了更强的效应——剂量依赖关系明确。** *BRCA2* 从 β = -2.88（低剂量）加深到 β = -4.23（高剂量）。这种剂量梯度是合成致死最有说服力的验证之一。
-
-```r
-# 剂量效应散点图
-p_dose <- ggplot(dose_df, aes(x = lo_beta, y = hi_beta)) +
-    geom_point(size = 0.3, alpha = 0.2, color = "grey60") +
-    geom_point(data = filter(dose_df, Gene %in% top_sl),
-        size = 2.5, color = "#E64B35") +
-    geom_text_repel(
-        data = filter(dose_df, Gene %in% top_sl),
-        aes(label = Gene), size = 3,
-        fontface = "italic", max.overlaps = 15) +
-    geom_abline(slope = 1, intercept = 0,
-        linetype = "dashed", color = "grey30") +
-    labs(x = "drug|beta (low dose)",
-         y = "drug|beta (high dose)") +
-    theme_minimal(base_size = 12) +
-    theme(panel.grid = element_blank(),
-          axis.line = element_line(color = "grey20"))
-
-ggsave("results/figures/pub_dose_response.png",
-       p_dose, width = 7, height = 7, dpi = 300)
-```
-
-<!-- 图 4 位置：剂量效应散点图 -->
+### 图 4：Dose-response of interaction beta
 
 ![图 4：剂量效应](assets/figures/pub_dose_response.png)
 
-**图 4：低剂量 vs 高剂量的 drug|beta 比较。** 对角线上方的点表示高剂量下效应更强。红色标注的 top 合成致死基因全部位于对角线上方且远离原点——剂量依赖的合成致死效应。灰色背景基因集中在原点附近——药物对它们没有特异效应。
+这张图最有价值的地方在于，它不只告诉你“某基因在 drug arm 下显著”，还告诉你：
 
-💡 **经验之谈：论文中怎么呈现药物互作筛选**
+- 随着剂量变高，这个 interaction effect 是不是同步增强
 
-> 推荐的 figure layout：
->
-> **Figure 主图：** Differential beta plot（图 1）+ Waterfall plot（图 2）
-> **Figure 子图：** 通路富集（图 3）+ 剂量效应（图 4）
-> **Supplementary：** 全基因列表 + sgRNA 一致性 + QC（Gini、比对率）
->
-> **Methods 必须写清楚：**
-> 1. 药物浓度和筛选时间
-> 2. Design matrix 的完整编码
-> 3. 用互作项（drug|beta）而非简单差异来识别合成致死
-> 4. FDR 阈值和 beta 阈值
+如果一个 top synthetic lethal gene 在低剂量和高剂量都保持同方向，而且高剂量更强，那它通常会更像真实的药物依赖，而不是噪声。
 
 ---
 
-## 保存结果
+## 本篇关键输出文件
 
-```r
-# ============================================================
-# 保存结果
-# ============================================================
-
-# 合成致死基因列表
-sl_output <- gene_classes %>%
-    filter(class == "Synthetic lethal") %>%
-    select(Gene, drug_beta = `drug|beta`,
-           drug_fdr = `drug|fdr`,
-           time_beta = `time|beta`) %>%
-    arrange(drug_fdr)
-write_tsv(sl_output, "results/synthetic_lethal_genes.tsv")
-
-# 抵抗基因列表
-res_output <- gene_classes %>%
-    filter(class == "Resistance") %>%
-    select(Gene, drug_beta = `drug|beta`,
-           drug_fdr = `drug|fdr`,
-           time_beta = `time|beta`) %>%
-    arrange(drug_fdr)
-write_tsv(res_output, "results/resistance_genes.tsv")
-
-cat("保存完成：\n")
-cat("  合成致死:", nrow(sl_output), "个基因\n")
-cat("  抵抗:", nrow(res_output), "个基因\n")
+```bash
+du -h \
+  repro/results/drug_mle.gene_summary.txt \
+  repro/results/drug_mle_dose.gene_summary.txt \
+  repro/results/synthetic_lethal_genes.tsv \
+  repro/results/resistance_genes.tsv \
+  repro/results/figures/pub_diff_beta.png \
+  repro/results/figures/pub_waterfall.png \
+  repro/results/figures/pub_sl_kegg.png \
+  repro/results/figures/pub_dose_response.png
 ```
 
 ```
 📊 输出：
-保存完成：
-  合成致死: 32 个基因
-  抵抗: 13 个基因
-  文件: results/synthetic_lethal_genes.tsv, results/resistance_genes.tsv
+4.0K   repro/results/resistance_genes.tsv
+4.0K   repro/results/synthetic_lethal_genes.tsv
+56K    repro/results/drug_mle.gene_summary.txt
+76K    repro/results/drug_mle_dose.gene_summary.txt
+148K   repro/results/figures/pub_waterfall.png
+172K   repro/results/figures/pub_sl_kegg.png
+220K   repro/results/figures/pub_dose_response.png
+264K   repro/results/figures/pub_diff_beta.png
 ```
 
 ---
 
 ## 本篇小结
 
-这一篇我们学习了 CRISPR 药物-基因互作筛选的分析方法——找到合成致死靶点。
+这篇最重要的升级，不是“又多跑了一个 MLE”，而是学会把 interaction effect 单独拿出来看：
 
-**三种分析策略的比较：** Drug vs T0（错误，混淆 essential 和 drug-specific）→ Drug vs DMSO（有缺陷，信号被削弱）→ **MLE 互作模型（正确，通过 design matrix 显式分离正常 dropout 和药物特异效应）**。
+1. **drug|beta 才是药物特异效应。**
+2. **time|beta 很负 ≠ synthetic lethal。** 那可能只是 common essential。
+3. **top hits 必须和已知 repair biology 对得上。**
+4. **剂量效应能显著增强你对 interaction hit 的信心。**
 
-**核心结果：** 这套 demo 互作模型检出了 32 个合成致死候选和 13 个抵抗基因。前者以 *BRCA1/2*、*RAD51*、*PALB2*、*FANCA/FANCD2* 等 HR 修复通路为主；后者则富集 *PARP1/2*、*TP53BP1*、*SHLD1/2/3*、*RIF1* 等已知耐药相关因子。
+如果第 2 篇讲的是“怎么理解 beta”，那第 5 篇讲的就是：
 
-**剂量效应分析** 确认了 top 合成致死基因的效应强度随药物浓度增加而增强。
-
-**方法层面最重要的收获：**
-
-1. **用互作项（`drug|beta`），不是简单差异。** 这是药物筛选分析中最常被犯的错误。
-2. **`drug|beta` << 0 且 `time|beta` ≈ 0 是理想的合成致死特征。** 两个条件都要看。
-3. **药物浓度用 IC20-IC30。** 太高的浓度增加噪声和假阳性。
-4. **剂量依赖性是最有说服力的验证。** 多一个浓度梯度 = 多一层信心。
-
-当前项目目录：
-
-```
-MAGeCK-Tutorial/
-├── data/drug_screen/
-│   ├── count_table.txt
-│   ├── library.tsv
-│   └── design_matrix.txt
-├── results/
-│   ├── drug_mle.gene_summary.txt
-│   ├── synthetic_lethal_genes.tsv     # 本篇
-│   ├── resistance_genes.tsv           # 本篇
-│   └── figures/
-│       ├── pub_diff_beta.png
-│       ├── pub_waterfall.png
-│       ├── pub_sl_kegg.png
-│       └── pub_dose_response.png
-└── analysis/
-    └── 05_drug_interaction.R
-```
-
-## 下一篇预告
-
-五篇教程走下来，我们从最基础的 MAGeCK count/test，到 MLE 复杂设计，到 MAGeCKFlute 整合分析，到 CRISPRi/a 特殊策略，再到药物互作筛选——方法学的全貌已经清晰了。最后一篇我们做收尾：**发表级图表的统一制作**——配色方案、字号标准、多面板拼接、统计标注——以及审稿人在 CRISPR 筛选论文中最常提出的 10 个问题和应对策略。
-
-最后一篇见。
-
----
-
-> 📌 本篇使用模拟数据演示方法学流程。Design matrix 和分析脚本可在 GitHub 仓库获取。
+> “怎么把 beta 解释成真正的药物互作生物学。”
 
 ---
 
 ## FAQ：常见问题
 
-**Q1：合成致死筛选一定需要 MLE 吗？能不能用 mageck test？**
+**Q1：为什么不能直接拿 `Drug vs T0` 做 synthetic lethal？**
 
-可以用 `mageck test` 做策略 B（Drug vs DMSO 直接比较），很多论文确实这么做。但如果你有 T0 数据，用 MLE 互作模型能得到更精确的估计和更高的统计效力。如果审稿人质疑，你可以同时展示策略 B 和策略 C 的结果——通常核心 hits 是一致的，MLE 多检出的那些是弱信号基因。
+因为那会把本来就 essential 的基因和 drug-specific effect 混在一起。
 
-**Q2：我的药物处理细胞增殖很慢，sgRNA 覆盖度不够怎么办？**
+**Q2：为什么 `Drug vs DMSO` 也还不够？**
 
-药物处理后细胞增殖变慢，意味着在相同培养时间内，Drug arm 的细胞分裂次数比 DMSO arm 少——sgRNA 的随机采样噪声更大。两个缓解方法：（1）增加初始感染的细胞数（保证每个 sgRNA 被 ≥ 500 个细胞携带）；（2）延长筛选时间让 Drug arm 有足够的分裂次数（但不能太长，否则 secondary mutations 积累会引入噪声）。
+因为你仍然需要在模型里明确拆开时间效应和药物效应，interaction 才会更干净。
 
-**Q3：怎么确定药物浓度？**
+**Q3：本篇为什么明确写成“教学 MLE 矩阵”？**
 
-做一个 dose-response 曲线（用不带文库的亲本细胞），找到 IC20-IC30 浓度。IC50 太高——一半细胞死了，文库覆盖度直接减半。IC20 是最常用的浓度——足以施加选择压力但不会大规模杀伤细胞。
-
-**Q4：抵抗基因和合成致死基因可以同时找吗？**
-
-可以——一次实验同时得到两个方向的结果。`drug|beta < 0` 是合成致死，`drug|beta > 0` 是抵抗。这是 CRISPR 药物筛选的一大优势——shRNA 筛选通常只能做一个方向。
-
-**Q5：如果我想做的不是"药物 + 基因"互作，而是"基因 A + 基因 B"的合成致死呢？**
-
-那是组合 CRISPR 筛选（combinatorial CRISPR screen），使用 dual-guide 文库——每个细胞携带两条 sgRNA 分别靶向两个不同基因。分析更复杂，需要专门的工具如 MAGeCK-iNC 或 GEMINI。这超出了本系列的范围，可能在进阶系列中覆盖。
-
----
-
-## 延伸阅读
-
-1. **PARP 抑制剂合成致死综述：** Lord & Ashworth (2017) *Science*
-2. **CRISPR 药物筛选方法论文：** Olivieri et al. (2020) *Cell* — olaparib resistance screen 的标杆论文
-3. **MAGeCK MLE 互作分析教程：** MAGeCK wiki — design matrix 编码示例
-4. **DepMap Drug Sensitivity：** https://depmap.org/repurposing — 药物敏感性数据库
-5. **组合 CRISPR 筛选综述：** Gonatopoulos-Pournatzis et al. (2020) *Nature Biotechnology*
+因为这版内容就是基于仓库内本地可复现结果，重点是把逻辑讲对、代码跑通，而不是冒充论文级 raw reanalysis。
 
 ---
 
 ## 本系列导航
 
 | 篇目 | 主题 | 状态 |
-|------|------|------|
-| 第 1 篇 | MAGeCK 分析——从 sgRNA 计数到必需基因 | ✅ 已发布 |
-| 第 2 篇 | MAGeCK MLE + VISPR——复杂实验设计与交互可视化 | ✅ 已发布 |
-| 第 3 篇 | MAGeCKFlute 整合分析——基因筛选的全景图 | ✅ 已发布 |
-| 第 4 篇 | CRISPRi/CRISPRa 筛选分析策略——不切 DNA 的基因扰动 | ✅ 已发布 |
+|---|---|---|
+| 第 1 篇 | MAGeCK 分析——从 sgRNA 计数到必需基因 | 已升级为全量实跑版 |
+| 第 2 篇 | MAGeCK MLE + VISPR——复杂实验设计与交互可视化 | 已升级为全量实跑版 |
+| 第 3 篇 | MAGeCKFlute 整合分析——基因筛选的全景图 | 已升级为全量实跑版 |
+| 第 4 篇 | CRISPRi/CRISPRa 筛选分析策略 | 已切到真实教学版 |
 | **第 5 篇** | **药物-基因互作筛选与合成致死分析——一加一大于二** | **📍 本篇** |
-| 第 6 篇 | 发表级图表与审稿人常见问题 | 🔜 下一篇 |
+| 第 6 篇 | 发表级图表与审稿人常见问题 | 待联动刷新 |

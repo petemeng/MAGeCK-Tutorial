@@ -1,10 +1,9 @@
 Analysis	Method	Key_Result
-MAGeCK count	Official demo FASTQ	mapped 58.1%-58.8%
-RRA essential genes	MAGeCK test	36 genes (FDR<0.05)
-MLE essential genes	MAGeCK mle	48 genes (FDR<0.05)
-MLE vs RRA	Correlation	r = -0.001
-CRISPRi essential genes	MAGeCK test	9 genes (FDR<0.05)
-CRISPRi ∩ CRISPRko	Overlap	8 genes
-Drug synthetic lethal	MLE interaction	32 genes
-Drug resistance	MLE interaction	13 genes
-DepMap-demo overlap	Cross-reference	36 genes
+Article 1 count QC	full raw MAGeCK count	mapped 72.2%-78.6%
+Article 1 essential	MAGeCK test (RRA)	1181 essential / 5 enriched
+Article 2 essential	MAGeCK mle	1027 essential / 80 enriched
+Article 2 overlap	RRA ∩ MLE	914 shared essential genes
+Article 3 DepMap	local reference overlap	RRA 38 / MLE 34 / shared 29
+Article 4 CRISPRi	MAGeCK test	9 essential, overlap with CRISPRko = 8
+Article 5 synthetic lethal	MLE interaction	32 genes
+Article 5 resistance	MLE interaction	13 genes
