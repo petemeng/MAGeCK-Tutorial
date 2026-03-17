@@ -1,6 +1,6 @@
 source('analysis/_common.R')
 
-counts <- read_tsv('data/crispri/count_table.txt', show_col_types = FALSE) %>%
+counts <- read_tsv('results/crispri_test.normalized.txt', show_col_types = FALSE) %>%
   mutate(
     tss_dist = as.numeric(str_extract(sgRNA, '[+-]\\d+')),
     lfc = log2((T12_rep1 + T12_rep2 + 1) / (T0_rep1 + T0_rep2 + 1))
@@ -59,7 +59,7 @@ cat('CRISPRko-only genes:', length(ko_only), '\n')
 cat('Mean log2 CN of CRISPRko-only genes:', round(mean(cn_check$HL60_HAEMATOPOIETIC_AND_LYMPHOID_TISSUE, na.rm = TRUE), 3), '\n')
 cat('Genome-wide mean log2 CN:', round(mean(cn_tbl$HL60_HAEMATOPOIETIC_AND_LYMPHOID_TISSUE, na.rm = TRUE), 3), '\n')
 
-crispra <- read_tsv('data/crispra/count_table.txt', show_col_types = FALSE) %>%
+crispra <- read_tsv('results/crispra_test.normalized.txt', show_col_types = FALSE) %>%
   mutate(pos_lfc = log2((Drug_rep1 + Drug_rep2 + 1) / (DMSO_rep1 + DMSO_rep2 + 1)))
 
 p_crispra <- ggplot(crispra, aes(pos_lfc)) +
