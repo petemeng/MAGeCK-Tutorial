@@ -13,12 +13,13 @@ gene_classes <- mle_res %>%
   transmute(
     Gene,
     `time|beta`,
+    `time|fdr`,
     `drug|beta`,
     `drug|fdr`,
     class = case_when(
       `drug|fdr` < 0.05 & `drug|beta` < -0.5 ~ 'Synthetic lethal',
       `drug|fdr` < 0.05 & `drug|beta` > 0.5 ~ 'Resistance',
-      `time|beta` < -0.5 ~ 'Common essential',
+      `time|fdr` < 0.05 & `time|beta` < -0.5 ~ 'Common essential',
       TRUE ~ 'NS'
     )
   )
@@ -53,7 +54,7 @@ waterfall_df <- gene_classes %>%
 
 p_water <- ggplot(waterfall_df, aes(rank, `drug|beta`, color = class)) +
   geom_point(size = 0.5, alpha = 0.55) +
-  geom_text_repel(aes(label = label), size = 3, fontface = 'italic', max.overlaps = 15) +
+  geom_text_repel(data = filter(waterfall_df, !is.na(label)), aes(label = label), size = 3, fontface = 'italic', max.overlaps = 15) +
   scale_color_manual(values = c('Synthetic lethal' = screen_colors$synthetic_lethal, 'Resistance' = screen_colors$resistance, 'Common essential' = screen_colors$common_essential, 'NS' = 'grey84')) +
   geom_hline(yintercept = 0, color = 'grey35', linewidth = 0.3) +
   labs(x = 'Gene rank', y = 'drug|beta', title = 'Waterfall plot of drug-specific effects') +
@@ -74,7 +75,7 @@ write_tsv(res_all, 'results/resistance_genes.tsv')
 p_sl <- dotplot(go_sl, showCategory = 10) +
   labs(title = 'Synthetic-lethal genes: GO BP enrichment') +
   theme_screen(10)
-save_plot('results/figures/pub_sl_kegg.png', p_sl, 8, 6)
+save_plot('results/figures/pub_sl_go.png', p_sl, 8, 6)
 
 dose_df <- dose_res %>%
   transmute(Gene, lo_beta = `drug_lo|beta`, hi_beta = `drug_hi|beta`) %>%
