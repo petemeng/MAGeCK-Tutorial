@@ -56,7 +56,7 @@ volcano_df <- rra_gene %>% mutate(
 
 p_b <- ggplot(volcano_df, aes(`neg|lfc`, neg_log_fdr, color = class)) +
   geom_point(size = 0.45, alpha = 0.62) +
-  geom_text_repel(aes(label = label), size = 2.5, fontface = 'italic', max.overlaps = 12) +
+  geom_text_repel(data = filter(volcano_df, !is.na(label)), aes(label = label), size = 2.5, fontface = 'italic', max.overlaps = 12) +
   scale_color_manual(values = c(Essential = screen_colors$essential, Enriched = screen_colors$enriched, NS = 'grey82')) +
   labs(x = 'Negative-selection LFC', y = '-log10(FDR)', title = 'Article 1 · gene volcano') +
   theme_screen(8)
@@ -130,12 +130,13 @@ plot_df <- drug_mle %>%
   transmute(
     Gene,
     time_beta = `time|beta`,
+    time_fdr = `time|fdr`,
     drug_beta = `drug|beta`,
     drug_fdr = `drug|fdr`,
     class = case_when(
       drug_fdr < 0.05 & drug_beta < -0.5 ~ 'Synthetic lethal',
       drug_fdr < 0.05 & drug_beta > 0.5 ~ 'Resistance',
-      time_beta < -0.5 ~ 'Common essential',
+      time_fdr < 0.05 & time_beta < -0.5 ~ 'Common essential',
       TRUE ~ 'NS'
     ),
     label = if_else(Gene %in% c('BRCA2', 'RAD51', 'FANCD2', 'PARP1', 'TP53BP1', 'RNF8'), Gene, NA_character_)
@@ -143,7 +144,7 @@ plot_df <- drug_mle %>%
 
 p_f <- ggplot(plot_df, aes(time_beta, drug_beta, color = class)) +
   geom_point(size = 0.7, alpha = 0.55) +
-  geom_text_repel(aes(label = label), size = 2.4, fontface = 'italic', max.overlaps = 12) +
+  geom_text_repel(data = filter(plot_df, !is.na(label)), aes(label = label), size = 2.4, fontface = 'italic', max.overlaps = 12) +
   scale_color_manual(values = c('Synthetic lethal' = screen_colors$synthetic_lethal, 'Resistance' = screen_colors$resistance, 'Common essential' = screen_colors$common_essential, 'NS' = 'grey84')) +
   geom_hline(yintercept = 0, color = 'grey35', linewidth = 0.3) +
   geom_vline(xintercept = 0, color = 'grey35', linewidth = 0.3) +

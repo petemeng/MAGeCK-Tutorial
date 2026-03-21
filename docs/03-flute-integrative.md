@@ -2,52 +2,23 @@
 title: 3. MAGeCKFlute 整合分析
 ---
 
-# CRISPR 筛选最佳实践（三）：MAGeCKFlute 整合分析——基因筛选的全景图
-
-> 📋 教程信息
-> - GitHub 仓库：[petemeng/MAGeCK-Tutorial](https://github.com/petemeng/MAGeCK-Tutorial)（完整代码、结果与更新记录）
-> - 在线网页：[petemeng.github.io/MAGeCK-Tutorial](https://petemeng.github.io/MAGeCK-Tutorial/)（可点击阅读的网页版教程）
-> - 数据来源：沿用第 1 篇 `SRP172473` full raw RRA 结果与第 2 篇 full raw MLE 结果
-> - 分析对象：A375 / Brunello modified tracrRNA cohort 的整合解释
-> - 本篇重点：`MAGeCKFlute::ReadRRA`、`ReadBeta`、`RankView`、`SquareView`，以及 GO / DepMap 交叉验证
-> - 预计阅读：40 分钟 | 实操：20–40 分钟
-> - 难度：⭐⭐⭐⭐（5 星制）
-> - 前置知识：完成第 1、2 篇，已有 full RRA 与 full MLE 输出
+> 本篇代码与数据：[GitHub 仓库](https://github.com/petemeng/MAGeCK-Tutorial) ｜ [网页版教程](https://petemeng.github.io/MAGeCK-Tutorial/)
+> 数据来源：沿用第 1 篇 `SRP172473` full raw RRA 结果与第 2 篇 full raw MLE 结果
 
 ---
 
-## 本篇目标
+## 跑完 MAGeCK，拿到一堆显著基因，然后呢？
 
-到第 2 篇为止，我们已经有了两份“主结果表”：
+到第 2 篇为止，我们手里已经有了两份”主结果表”——RRA 的 gene summary 和 MLE 的 gene summary。
 
-- 第 1 篇：RRA 的 `mageck_test.gene_summary.txt`
-- 第 2 篇：MLE 的 `mageck_mle.gene_summary.txt`
+但真正写文章、做汇报、答审稿时，只给出两个大表远远不够。审稿人会追问四件事：
 
-但真正写文章、做汇报、答审稿时，只给出两个大表远远不够。你还需要把结果组织成 4 个层面：
-
-1. **排名层面**：最显著的 essential / enriched genes 在全局中的位置
-2. **模型层面**：RRA 和 MLE 的信号分布是否一致
-3. **功能层面**：这些命中集中在哪些生物学过程
-4. **外部参考层面**：和 DepMap common essential 参考集重不重合
+1. **排名**：最显著的 essential / enriched genes 在全局中的位置
+2. **模型一致性**：RRA 和 MLE 的信号分布是否一致
+3. **功能解释**：这些命中集中在哪些生物学过程
+4. **外部验证**：和 DepMap common essential 参考集重不重合
 
 这正是 `MAGeCKFlute` 最擅长的事情。
-
----
-
-## 这次“整合分析”到底整合了什么
-
-我没有再回到 toy 结果，也没有拿一套新的 demo 数据来糊弄，而是直接把前两篇已经实跑出来的 full 结果接起来：
-
-- `full/results/article1_basic_full_raw/mageck_test.gene_summary.txt`
-- `full/results/article2_full_raw/mageck_mle.gene_summary.txt`
-- `full/results/article1_basic_full_raw/go_bp.tsv`
-- `repro/refs/depmap_common_essential.tsv`
-
-其中最后那个 `depmap_common_essential.tsv` 是仓库内自带的一个**本地参考集**（102 个基因），不是在线实时拉取的全量 DepMap release。这样做的好处是：
-
-- 结果稳定
-- 本地可复现
-- 不会因为外部接口变化把教程跑崩
 
 ---
 
@@ -69,12 +40,12 @@ packageVersion('MAGeCKFlute')
 [1] '2.10.0'
 ```
 
-### 两个真实 API 小坑
+### 两个 API 小坑，先说清楚
 
-这次我顺手也把 `MAGeCKFlute` 的两个容易踩坑的点验证了：
+用 `MAGeCKFlute` 之前有两个容易踩的点：
 
-1. `ReadRRA()` 返回的是一个三列表：`id / Score / FDR`
-2. `RankView()` 不能直接喂整个 data.frame，要喂**带名字的数值向量**
+1. `ReadRRA()` 返回的是三列表：`id / Score / FDR`
+2. `RankView()` 不能直接喂 data.frame，要喂**带名字的数值向量**
 
 也就是：
 
@@ -84,8 +55,6 @@ rank_vec <- rra$Score
 names(rank_vec) <- rra$id
 RankView(rank_vec)
 ```
-
-这是本次真实跑通后确认的用法，不是照着旧文档生搬硬套。
 
 ---
 
@@ -111,27 +80,88 @@ RRA columns: id, Score, FDR
 MLE columns: Gene, treatment
 ```
 
-这里 `20114 vs 19115` 的差异，主要不是普通编码基因本身丢了，而是 non-targeting controls 的处理方式不同：RRA 结果里它们仍以 1000 个 `Control_sg*` 条目存在，MLE 结果里则收束成 1 个 `Non-Targeting_Control` 汇总行，所以行数会少一截。与此同时，`ReadBeta()` 这里返回的 `treatment` 列，实际对应的就是 MLE gene summary 里的 `treatment|beta`，列名直接沿用 design matrix 里的因子名，并不是 z 值或 FDR。
+RRA 有 **20,114** 行，MLE 有 **19,115** 行。差了约 1000 行，不是基因丢了，而是 non-targeting controls 的记法不同：RRA 里它们是 1000 个单独条目，MLE 里收束成了 1 行。`ReadBeta()` 返回的 `treatment` 列对应的是 MLE gene summary 里的 `treatment|beta`，列名沿用 design matrix 里的因子名。
 
-这一步已经说明了一件非常重要的事：
+这一步说明了一件重要的事：
 
-- `ReadRRA` 会把 MAGeCK 的 gene summary 抽象成统一的 rank-score 结构
-- `ReadBeta` 会把 MLE 的某个 beta 列抽成统一的系数表
+- `ReadRRA` 把 gene summary 抽象成统一的 rank-score 结构
+- `ReadBeta` 把 MLE 的 beta 列抽成统一的系数表
 
-这就是为什么 `MAGeCKFlute` 很适合作为“第 3 层整理工具”——它不重新做统计，而是把前面分析的结果整理成更容易讲清楚的形状。
+`MAGeCKFlute` 不重新做统计，而是把前面的结果整理成更容易讲清楚的形状。
 
 ---
 
 ## Step 2：生成 RankView 和 SquareView
 
-我把这篇用到的所有真实整合图都写进了：
-
-`full/scripts/plot_article3_full.R`
-
-直接执行：
+本篇整合图对应的代码如下：
 
 ```bash
-Rscript full/scripts/plot_article3_full.R
+Rscript - <<'RSCRIPT'
+source('MAGeCK/repro/analysis/_common.R')
+suppressPackageStartupMessages({
+  library(MAGeCKFlute)
+  library(readr)
+  library(dplyr)
+  library(ggplot2)
+})
+
+rra_path <- 'full/results/article1_basic_full_raw/mageck_test.gene_summary.txt'
+mle_path <- 'full/results/article2_full_raw/mageck_mle.gene_summary.txt'
+go_path <- 'full/results/article1_basic_full_raw/go_bp.tsv'
+depmap_path <- 'MAGeCK/repro/refs/depmap_common_essential.tsv'
+fig_dir <- 'full/reports/figures'
+out_dir <- 'full/results/article3_integrative'
+dir.create(fig_dir, recursive = TRUE, showWarnings = FALSE)
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+
+rra_flute <- ReadRRA(rra_path)
+rank_vec <- rra_flute$Score
+names(rank_vec) <- rra_flute$id
+png(file.path(fig_dir, 'article3_pub_flute_rankview_full.png'), width = 1800, height = 1100, res = 200)
+suppressWarnings(RankView(rank_vec, top = 6, bottom = 0, cutoff = 2, main = 'MAGeCKFlute RankView (full raw cohort)'))
+dev.off()
+
+beta <- ReadBeta(mle_path)
+square_df <- data.frame(Control = rep(0, nrow(beta)), Treatment = beta$treatment, Gene = beta$Gene)
+png(file.path(fig_dir, 'article3_pub_flute_squareview_full.png'), width = 1600, height = 1100, res = 200)
+SquareView(square_df, ctrlname = 'Control', treatname = 'Treatment', top = 6, main = 'MAGeCKFlute SquareView (full raw cohort)')
+dev.off()
+
+go <- read_tsv(go_path, show_col_types = FALSE) %>%
+  slice_head(n = 10) %>%
+  mutate(Description = factor(Description, levels = rev(Description)), neglog10 = -log10(p.adjust))
+
+p_go <- ggplot(go, aes(Count, Description, size = Count, color = neglog10)) +
+  geom_point(alpha = 0.85) +
+  scale_color_gradient(low = '#8bbf99', high = '#7b2d26') +
+  labs(x = 'Hit genes', y = NULL, color = '-log10(adj.P)', title = 'GO BP summary from full RRA essentials') +
+  theme_screen(10)
+save_plot(file.path(fig_dir, 'article3_pub_flute_go_full.png'), p_go, 8, 5.8)
+
+depmap <- read_tsv(depmap_path, show_col_types = FALSE)
+rra_raw <- read_tsv(rra_path, show_col_types = FALSE)
+mle_raw <- read_tsv(mle_path, show_col_types = FALSE)
+rra_ess <- rra_raw %>% filter(`neg|fdr` < 0.05) %>% pull(id)
+mle_ess <- mle_raw %>% filter(`treatment|fdr` < 0.05, `treatment|beta` < -0.5) %>% pull(Gene)
+dep_genes <- depmap$Gene
+
+overlap_df <- tibble(
+  Category = c('RRA ∩ DepMap', 'MLE ∩ DepMap', 'RRA ∩ MLE ∩ DepMap'),
+  Count = c(
+    length(intersect(rra_ess, dep_genes)),
+    length(intersect(mle_ess, dep_genes)),
+    length(intersect(intersect(rra_ess, mle_ess), dep_genes))
+  )
+)
+write_tsv(overlap_df, file.path(out_dir, 'depmap_overlap_summary.tsv'))
+
+cat('rra_flute_rows:', nrow(rra_flute), '\n')
+cat('beta_rows:', nrow(beta), '\n')
+cat('go_terms_plotted:', nrow(go), '\n')
+cat('rra_depmap_overlap:', overlap_df$Count[overlap_df$Category == 'RRA ∩ DepMap'], '\n')
+cat('mle_depmap_overlap:', overlap_df$Count[overlap_df$Category == 'MLE ∩ DepMap'], '\n')
+cat('shared_depmap_overlap:', overlap_df$Count[overlap_df$Category == 'RRA ∩ MLE ∩ DepMap'], '\n')
+RSCRIPT
 ```
 
 ```
@@ -148,28 +178,21 @@ shared_depmap_overlap: 29
 
 ![图 1：RankView](assets/figures/article3_pub_flute_rankview_full.png)
 
-这张图的作用不是替代第 1 篇的火山图，而是提供一个更偏“整合摘要”的排序视角。你可以把它理解成：
+这张图不是替代第 1 篇的火山图，而是提供一个”整合摘要”的排序视角：
 
 - 左端：最强的 dropout / essential signal
 - 中间：背景基因
 - 右端：相对富集信号
 
-脚本里这里设的是 `RankView(top = 6, bottom = 0)`，所以它更适合看**全局分布形态**和左端最强的一小批信号，而不是拿来逐个基因精确定位。对这套数据来说，左端最核心的还是第 1 篇里已经反复出现的 `BUB3`、`RPS3A`、`RPL19` 这类 core essential genes。
-
-在这套 full raw cohort 上，RankView 的左端明显更重，这和第 1 篇、第 2 篇都一致：**主信号仍然是 essential gene dropout。**
+左端最核心的还是第 1 篇里反复出现的 `BUB3`、`RPS3A`、`RPL19` 这类 core essential genes。左端明显更重，和前两篇完全一致：**主信号仍然是 essential gene dropout。**
 
 ### 图 2：MAGeCKFlute SquareView
 
 ![图 2：SquareView](assets/figures/article3_pub_flute_squareview_full.png)
 
-SquareView 这里用的是第 2 篇的 MLE beta。为了让图能跑通，我给它构造了一个最简单的双列输入：
+SquareView 用的是第 2 篇的 MLE beta。这里做了一个简化处理：把 `Control` 设为 0、`Treatment` 设为 beta，让图稳定跑通。`SquareView` 原本更适合比较两个条件的 beta（比如 `Drug` vs `DMSO`）；只有一个 treatment 时，坐标轴的含义更接近”beta 相对 0 的方向和大小”。
 
-- `Control = 0`
-- `Treatment = beta`
-
-这其实是一个**简化 workaround**。`SquareView` 原本更适合比较两个条件的 beta（比如 `Drug` vs `DMSO`）；当这里只有一个 treatment 时，把 `Control` 硬编码成 0 可以让图稳定跑通，但此时坐标轴的含义更接近“beta 相对 0 的方向和大小”，而不是两个真实实验条件之间的差异。
-
-这样它本质上是在把 MLE beta 重新投影成一个更直观的“方向 + 强度”图。这个图的价值不在于绝对坐标，而在于快速识别：
+它本质上是把 MLE beta 重新投影成”方向 + 强度”图，价值在于快速识别：
 
 - 哪些点明确落在 essential 区域
 - 哪些是明显 enriched
@@ -177,49 +200,27 @@ SquareView 这里用的是第 2 篇的 MLE beta。为了让图能跑通，我给
 
 ---
 
-## Step 3：功能层面——把 hit list 变成生物学主题
+## Step 3：把 hit list 变成生物学主题
 
-第 1 篇我们已经把 full RRA essential genes 做过 GO enrichment，并得到了 `go_bp.tsv`。第 3 篇不再重复统计，而是把按 `p.adjust` 从小到大排序后的前 10 个条目整理成整合摘要图：
+第 1 篇我们已经把 full RRA essential genes 做过 GO enrichment，并得到了 `go_bp.tsv`。第 3 篇不再重复统计，而是把前 10 个条目整理成整合摘要图：
 
 ![图 3：GO 摘要](assets/figures/article3_pub_flute_go_full.png)
 
-这张图本质上回答的是：
+这张图回答的是：**你的 essential genes 在干什么？**
 
-> “你的 essential genes 在干什么？”
-
-答案非常集中：
-
-- ribonucleoprotein complex biogenesis
-- ribosome biogenesis
-- rRNA metabolic process
-- cytoplasmic translation
-- rRNA processing
-
-这类结果对 CRISPR dropout screen 来说非常有说服力，因为它们都指向细胞最基础的生长依赖回路。
-
-也就是说，**这不是一堆杂乱的 gene names，而是一整套彼此一致的翻译 / 核糖体 / RNA 处理网络。**
+答案非常集中：ribonucleoprotein complex biogenesis、ribosome biogenesis、rRNA metabolic process、cytoplasmic translation、rRNA processing。对 CRISPR dropout screen 来说这非常有说服力——它们都指向细胞最基础的生长依赖回路。不是一堆杂乱的 gene names，而是一整套彼此一致的翻译 / 核糖体 / RNA 处理网络。
 
 ---
 
-## Step 4：外部参考——和本地 DepMap essential 集比一比
+## Step 4：和 DepMap essential 集比一比
 
-“和已有大规模筛选一致吗？” 这个问题非常常见。为了保证本地可复现，我这次没有在线拉完整 DepMap，而是使用仓库里的本地参考表：
-
-- `repro/refs/depmap_common_essential.tsv`
-
-它包含 **102** 个 common essential genes。这里先把判定口径说清楚：
+“和已有大规模筛选一致吗？” 这个问题审稿人几乎必问。这里使用仓库中的 DepMap 参考表（**102** 个 common essential genes），判定口径如下：
 
 - **RRA essential**：`neg|fdr < 0.05`
 - **MLE essential**：`treatment|beta < -0.5` 且 `treatment|fdr < 0.05`
 - **shared essential**：同时满足上面两套标准
 
-我们再把它分别和：
-
-- 第 1 篇的 full RRA essential
-- 第 2 篇的 full MLE essential
-- RRA ∩ MLE shared essential
-
-做交集统计。
+我们再把它分别和第 1 篇的 full RRA essential、第 2 篇的 full MLE essential、以及 RRA ∩ MLE shared essential 做交集统计。
 
 ```bash
 cat full/results/article3_integrative/depmap_overlap_summary.tsv
@@ -237,27 +238,17 @@ RRA ∩ MLE ∩ DepMap	29
 
 ![图 4：DepMap overlap](assets/figures/article3_pub_depmap_overlap_full.png)
 
-怎么理解这三个数：
+怎么理解这三个数：**38** 个 RRA essential 能打到本地 DepMap 参考集；**34** 个 MLE essential 能打到；**29** 个是 RRA 和 MLE 同时认定 essential 且又在 DepMap 参考里的高置信交集。
 
-- **38**：RRA essential 里，有 38 个能打到本地 DepMap common essential 参考集
-- **34**：MLE essential 里，有 34 个能打到这套参考集
-- **29**：RRA 和 MLE 同时认定 essential、且又在 DepMap 参考里的高置信交集
+注意尺度：这份本地参考集只有 102 个基因，远小于完整 DepMap release 里常见的 700+ common essential 定义。这些 overlap 数字更适合做方向性核对，不宜直接当正式基准。
 
-但这里也要提醒尺度问题：这份本地 DepMap 参考集只有 **102** 个基因，覆盖面远小于完整 DepMap release 里常见的 **700+** common essential 定义。所以这几个 overlap 数字更适合当 **sanity check**，用来确认方向对不对，而不是拿来当正式 benchmark。
-
-这 29 个 shared hits 是一个非常值得优先关注的小集合，因为它同时满足：
-
-1. 在当前 full raw cohort 里显著
-2. 被两种算法共同支持
-3. 与外部 essential 参考一致
-
-如果你后面要挑基因做验证，这种“多重证据交集”通常最有性价比。
+但这 29 个 shared hits 非常值得优先关注——它同时满足：在当前 cohort 里显著、被两种算法共同支持、与外部 essential 参考一致。如果后面要挑基因做验证，这种”多重证据交集”通常最有性价比。
 
 ---
 
-## 本篇到底用了多少 MAGeCKFlute，多少自定义整理
+## 本篇到底用了多少 MAGeCKFlute
 
-透明起见，这里直接说结论：真正直接调用并验证过的 `MAGeCKFlute` 组件只有 `ReadRRA()`、`ReadBeta()`、`RankView()`、`SquareView()`；GO summary 和 DepMap overlap 则是基于前两篇结果表与本地参考表做的稳定整理。也就是说，本篇不是把所有步骤都交给 `MAGeCKFlute` 黑箱完成，而是用它负责读入与摘要图，再把更容易受环境影响的外部数据库部分改造成可长期复现的本地流程。
+直接调用并验证过的组件：`ReadRRA()`、`ReadBeta()`、`RankView()`、`SquareView()`。GO summary 和 DepMap overlap 则基于前两篇结果表与本地参考表完成。重点是用 MAGeCKFlute 负责读入与摘要图，把更容易受环境影响的外部数据库部分整理成本地流程。
 
 ---
 
@@ -298,33 +289,28 @@ du -h \
 
 ---
 
-## FAQ：常见问题
+## FAQ
 
-**Q1：为什么这里没直接跑 `FluteRRA()` / `FluteMLE()` 一键全家桶？**
+**Q1：为什么不直接跑 `FluteRRA()` / `FluteMLE()` 一键全家桶？**
 
-因为教程最重要的是稳定可复现。`RankView` / `SquareView` / 本地 GO / 本地 DepMap 这条组合链更稳，也更容易查错。
+`RankView` / `SquareView` / 本地 GO / 本地 DepMap 这条组合链更稳，也更容易查错。
 
 **Q2：本地 DepMap 参考只有 102 个基因，会不会太小？**
 
-会。它更像一个 sanity check，而不是完整 benchmark。所以第 3 篇里我把它明确写成本地参考集，不冒充全量 DepMap。
+会。更适合做方向性核对，不是完整性能评估。
 
-**Q3：`RankView()` 为什么不能直接喂 `ReadRRA()` 返回的数据框？**
+**Q3：`RankView()` 为什么不能直接喂 data.frame？**
 
-因为它实际上要的是一个带 gene name 的数值向量。这个坑我这次已经实跑踩过并修掉了。
+它实际上要的是一个带 gene name 的数值向量。
 
 **Q4：第 3 篇后面还能往哪里扩？**
 
-最自然的方向有两个：
-
-- 接入真正的全量 DepMap release 做更完整交叉验证
-- 加入 copy number correction / lineage-specific dependency 分析
+两个方向：接入全量 DepMap release 做更完整交叉验证；加入 copy number correction / lineage-specific dependency 分析。
 
 ---
 
 ## 本系列导航
 
-| 篇目 | 主题 |
-|---|---|
-| 第 1 篇 | MAGeCK 分析——从 sgRNA 计数到必需基因 |
-| 第 2 篇 | MAGeCK MLE + VISPR——复杂实验设计与交互可视化 |
-| **第 3 篇** | **MAGeCKFlute 整合分析——基因筛选的全景图** |
+- 第 1 篇：MAGeCK 分析——从 sgRNA 计数到必需基因
+- 第 2 篇：MAGeCK MLE + VISPR——复杂实验设计与交互可视化
+- **第 3 篇：MAGeCKFlute 整合分析——基因筛选的全景图**

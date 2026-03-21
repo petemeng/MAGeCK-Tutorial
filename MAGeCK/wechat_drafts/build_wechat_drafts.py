@@ -17,6 +17,7 @@ ARTICLE_CONFIG: list[dict[str, Any]] = [
     {
         'source': ROOT / 'MAGeCK' / '1.md',
         'slug': '01-mageck-basic',
+        'title': 'CRISPR 筛选最佳实践（一）：MAGeCK 分析——从 sgRNA 计数到必需基因',
         'series': 'CRISPR 筛选最佳实践（一）',
         'cover_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article1_pub_gene_volcano_full.png',
         'hero_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article1_pub_sgrna_rank_full.png',
@@ -26,6 +27,7 @@ ARTICLE_CONFIG: list[dict[str, Any]] = [
     {
         'source': ROOT / 'MAGeCK' / '2.md',
         'slug': '02-mageck-mle-vispr',
+        'title': 'CRISPR 筛选最佳实践（二）：MAGeCK MLE + VISPR——复杂实验设计与交互可视化',
         'series': 'CRISPR 筛选最佳实践（二）',
         'cover_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article2_pub_mle_vs_rra_full.png',
         'hero_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article2_pub_mle_vs_rra_full.png',
@@ -35,6 +37,7 @@ ARTICLE_CONFIG: list[dict[str, Any]] = [
     {
         'source': ROOT / 'MAGeCK' / '3.md',
         'slug': '03-mageckflute-integrative',
+        'title': 'CRISPR 筛选最佳实践（三）：MAGeCKFlute 整合分析——基因筛选的全景图',
         'series': 'CRISPR 筛选最佳实践（三）',
         'cover_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article3_pub_flute_squareview_full.png',
         'hero_image': ROOT / 'MAGeCK' / 'full' / 'reports' / 'figures' / 'article3_pub_flute_rankview_full.png',
@@ -44,6 +47,7 @@ ARTICLE_CONFIG: list[dict[str, Any]] = [
     {
         'source': ROOT / 'MAGeCK' / '4.md',
         'slug': '04-crispri-analysis',
+        'title': 'CRISPR 筛选最佳实践（四）：CRISPRi/CRISPRa 筛选分析策略——不切 DNA 的基因扰动',
         'series': 'CRISPR 筛选最佳实践（四）',
         'cover_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_crispri_vs_ko.png',
         'hero_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_tss_distance.png',
@@ -53,6 +57,7 @@ ARTICLE_CONFIG: list[dict[str, Any]] = [
     {
         'source': ROOT / 'MAGeCK' / '5.md',
         'slug': '05-drug-interaction-screen',
+        'title': 'CRISPR 筛选最佳实践（五）：药物-基因互作筛选与合成致死分析——一加一大于二',
         'series': 'CRISPR 筛选最佳实践（五）',
         'cover_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_diff_beta.png',
         'hero_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'pub_dose_response.png',
@@ -62,6 +67,7 @@ ARTICLE_CONFIG: list[dict[str, Any]] = [
     {
         'source': ROOT / 'MAGeCK' / '6.md',
         'slug': '06-publication-figures-review',
+        'title': 'CRISPR 筛选最佳实践（六）：发表级图表与审稿人常见问题——最后一公里',
         'series': 'CRISPR 筛选最佳实践（六）',
         'cover_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'Figure_main.png',
         'hero_image': ROOT / 'MAGeCK' / 'repro' / 'results' / 'figures' / 'Figure_main.png',
@@ -96,10 +102,19 @@ TD_STYLE = 'border-top:1px solid #f1f5f9;padding:10px 12px;color:#374151;vertica
 LINK_STYLE = 'color:#3b6b54;text-decoration:none;border-bottom:1px solid #b7ccb7;'
 
 
-def extract_title(md_text: str) -> str:
+def extract_title(md_text: str, fallback: str | None = None) -> str:
+    in_fence = False
     for line in md_text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith('```'):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
         if line.startswith('# '):
             return line[2:].strip()
+    if fallback:
+        return fallback
     raise ValueError('Missing H1 title')
 
 
@@ -343,7 +358,7 @@ def beautify_html(
 def render_article(cfg: dict[str, Any]) -> dict[str, Any]:
     source_path: Path = cfg['source']
     md_text = source_path.read_text()
-    title = extract_title(md_text)
+    title = extract_title(md_text, cfg.get('title'))
     display_title = cfg.get('wechat_title', normalize_display_title(title))
     output_path = RENDER_DIR / f"{cfg['slug']}.html"
 

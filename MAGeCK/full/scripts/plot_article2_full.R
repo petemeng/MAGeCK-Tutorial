@@ -104,10 +104,16 @@ beta_df <- joined %>%
     TRUE ~ 'NS'
   ))
 
+beta_xlim <- c(-6, 1.5)
+outside_left <- sum(beta_df$mle_beta < beta_xlim[1])
+outside_right <- sum(beta_df$mle_beta > beta_xlim[2])
+
 p_beta <- ggplot(beta_df, aes(mle_beta, fill = beta_group)) +
   geom_histogram(binwidth = 0.1, color = 'white', alpha = 0.9) +
   scale_fill_manual(values = c(Essential = screen_colors$essential, Enriched = screen_colors$enriched, NS = screen_colors$ns)) +
   geom_vline(xintercept = c(-0.5, 0.5), linetype = 'dashed', linewidth = 0.3, color = 'grey55') +
+  coord_cartesian(xlim = beta_xlim) +
+  annotate('text', x = -5.8, y = Inf, label = sprintf('display clipped: %d left, %d right', outside_left, outside_right), hjust = 0, vjust = 1.5, size = 3.2, color = 'grey80') +
   labs(x = 'MLE treatment beta', y = 'Gene count', title = 'Distribution of MLE beta scores (full raw cohort)') +
   theme_screen(10)
 save_plot(file.path(fig_dir, 'article2_pub_beta_distribution_full.png'), p_beta, 8, 5)
