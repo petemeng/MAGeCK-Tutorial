@@ -226,6 +226,10 @@ def is_meta_quote(tag: Tag) -> bool:
     return any(key in text for key in ['教程信息', '实跑修订', '可执行版代码', '一键复现'])
 
 
+def normalize_quote_text(text: str) -> str:
+    return ' '.join(text.replace('\xa0', ' ').split())
+
+
 
 def beautify_html(
     html_body: str,
@@ -239,6 +243,14 @@ def beautify_html(
 
     if soup.h1:
         soup.h1.decompose()
+
+    for node in list(soup.contents):
+        if isinstance(node, NavigableString) and not node.strip():
+            continue
+        if isinstance(node, Tag) and node.name == 'blockquote':
+            node.decompose()
+            continue
+        break
 
     for blockquote in soup.find_all('blockquote'):
         if is_meta_quote(blockquote):
