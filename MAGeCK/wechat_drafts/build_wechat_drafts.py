@@ -208,6 +208,10 @@ def build_meta_card(_: Tag | BeautifulSoup, lines: list[str], note: bool = False
     for code in section.find_all('code'):
         code['style'] = INLINE_CODE_STYLE
     for link in section.find_all('a'):
+        href = link.get('href', '').strip()
+        if not note and href.startswith(('http://', 'https://')):
+            label = link.get_text(' ', strip=True)
+            link.string = f'{label}：{href}'
         style_tag(link, LINK_STYLE)
     return section
 
